@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <!-- Exclude file temp projection Visual Studio dari build -->
+    <Compile Remove="**\*.__projection.g.cs" />
+    <Content Remove="**\*.__projection.g.*" />
+    <None Remove="**\*.__projection.g.*" />
+  </ItemGroup>
+	
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>map_libre</RootNamespace>
+  </PropertyGroup>
+
+</Project>

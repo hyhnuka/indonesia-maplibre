@@ -1,0 +1,20 @@
+/* Hilangkan margin/padding bawaan body & html */
+html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden; /* Biar gak ada scrollbar ganda */
+}
+
+/* Buat elemen #map menutupi seluruh layar secara penuh */
+#map {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1; /* Supaya tetap terlihat jelas */
+}
