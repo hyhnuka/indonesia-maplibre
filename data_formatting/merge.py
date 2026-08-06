@@ -2,10 +2,10 @@ import os
 import json
 import re
 import csv
-
-INPUT_FOLDER = "./sidoarjo"
-CSV_FILE = "./sidoarjo/sidoarjo.csv"
-OUTPUT_FILE = "./map_kota/map_sidoarjo.geojson"
+    
+INPUT_FOLDER = "./makassar"
+CSV_FILE = "./makassar/makassar.csv"
+OUTPUT_FILE = "./map_kota/map_makassar.geojson"
 
 # ==========================================================
 # LOAD DATA PENDUDUK DARI CSV
@@ -21,15 +21,16 @@ if os.path.exists(CSV_FILE):
             kode = row["Kode Kecamatan"].strip()
 
             population_data[kode] = {
-                "pria": int(row["Laki-Laki"].replace(".", "")),
+                # "pria": int(row["Laki-Laki"].replace(".", "")),
+                "pria": int(row[[k for k in row.keys() if k.lower() == "laki-laki"][0]].replace(".", "")),
                 "wanita": int(row["Perempuan"].replace(".", "")),
                 "total_penduduk": int(row["Jumlah"].replace(".", ""))
             }
 
-    print(f"✅ Data penduduk dimuat: {len(population_data)} kecamatan")
+    print(f"Total data penduduk kecamatan: {len(population_data)} kecamatan")
 
 else:
-    print(f"⚠️ CSV '{CSV_FILE}' tidak ditemukan")
+    print(f"CSV '{CSV_FILE}' tidak ditemukan")
 
 
 # ==========================================================
@@ -49,11 +50,11 @@ merged_geojson = {
 }
 
 if not os.path.exists(INPUT_FOLDER):
-    print(f"❌ Folder '{INPUT_FOLDER}' tidak ditemukan!")
+    print(f"Folder '{INPUT_FOLDER}' tidak ditemukan!")
     exit()
 
 files = [f for f in os.listdir(INPUT_FOLDER) if f.endswith('.geojson') or f.endswith('.json')]
-print(f"🔄 Memproses {len(files)} file kecamatan...")
+print(f"Memproses {len(files)} file kecamatan...")
 
 for filename in files:
     filepath = os.path.join(INPUT_FOLDER, filename)
@@ -67,7 +68,7 @@ for filename in files:
     # atau
     # 3578010_Karang_Pilang
     # ------------------------------------------------------
-
+    # ekstrak kode kecamatan dari nama file geojson
     match = re.search(r"(?:id)?(\d+)", clean_filename, re.IGNORECASE)
 
     if match:
@@ -76,7 +77,7 @@ for filename in files:
         district_id = None
 
 
-    # ambil nama daerah setelah kode
+    # ekstrak nama daerah dr file geojson
     raw_name = re.sub(
         r"^(?:id)?\d+[_\-\s]*",
         "",
@@ -126,8 +127,8 @@ for filename in files:
 
             properties = {
                 "district_id": district_id,
-                "province": "Jawa Timur",
-                "regency": "Sidoarjo",
+                "province": "Sulawesi Selatan",
+                "regency": "Makassar",
                 "district": district_name,
                 "pria": penduduk["pria"],
                 "wanita": penduduk["wanita"],
@@ -142,7 +143,7 @@ for filename in files:
 
             merged_geojson["features"].append(feature)
             print(
-                f"✅ [{district_id}] {district_name}"
+                f"[{district_id}] {district_name}"
                 f"| Penduduk: {penduduk['total_penduduk']:,}"
             )
 
@@ -150,20 +151,26 @@ for filename in files:
             print(f"Error pada file {filename}: {e}")
 
 # ------------------------------------------------------------------
-# POST-PROCESSING UNTUK MENYAMPINGKAN DATA COORDINATES
+# POST-PROCESSING UNTUK FORMAT DATA COORDINATES
 # ------------------------------------------------------------------
 raw_json = json.dumps(merged_geojson, ensure_ascii=False, indent=2)
 
 # Fungsi untuk membuang newline & spasi berlebih di dalam blok "coordinates": [...]
 def collapse_coordinates(match):
     coord_str = match.group(0)
-    collapsed = re.sub(r'\s+', ' ', coord_str)
-    collapsed = re.sub(r'\[\s+', '[', collapsed)
-    collapsed = re.sub(r'\s+\]', ']', collapsed)
-    collapsed = re.sub(r',\s*', ', ', collapsed)
-    return collapsed
 
-# Cari pattern "coordinates": [ ... ] lalu buat satu baris menyamping
+    # Pisahkan bagian penutup "}"
+    body = coord_str[:-1]
+    closing = "}"
+
+    body = re.sub(r'\s+', ' ', body)
+    body = re.sub(r'\[\s+', '[', body)
+    body = re.sub(r'\s+\]', ']', body)
+    body = re.sub(r',\s*', ', ', body)
+
+    return body + "\n      " + closing
+
+# pattern "coordinates": [ ... ] lalu buat satu baris menyamping
 compact_json = re.sub(
     r'"coordinates":\s*\[[\s\S]*?\]\s*\}',
     collapse_coordinates,

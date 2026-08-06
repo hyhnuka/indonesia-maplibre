@@ -79,7 +79,7 @@
         "province": "Jawa Timur",
         "regency": "Sidoarjo",
         "district": "Jabon",
-        "pria": 28,
+        "pria": 28000,
         "wanita": 27737,
         "total_penduduk": 55737
       },
@@ -128,7 +128,7 @@
         "regency": "Sidoarjo",
         "district": "Tulangan",
         "pria": 51581,
-        "wanita": 5124,
+        "wanita": 51240,
         "total_penduduk": 102821
       },
       "geometry": {
@@ -177,7 +177,7 @@
         "district": "Sidoarjo",
         "pria": 99232,
         "wanita": 100938,
-        "total_penduduk": 20017
+        "total_penduduk": 200170
       },
       "geometry": {
         "type": "Polygon",
@@ -272,7 +272,7 @@
         "regency": "Sidoarjo",
         "district": "Krian",
         "pria": 67041,
-        "wanita": 6577,
+        "wanita": 65770,
         "total_penduduk": 132811
       },
       "geometry": {
@@ -289,7 +289,7 @@
         "district": "Balong Bendo",
         "pria": 37691,
         "wanita": 36709,
-        "total_penduduk": 744
+        "total_penduduk": 74400
       },
       "geometry": {
         "type": "Polygon",
