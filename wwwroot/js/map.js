@@ -1,239 +1,6 @@
-// // =========================================================================
-// // 1. INISIALISASI PETA
-// // =========================================================================
-// const map = new maplibregl.Map({
-//     container: 'map',
-//     style: 'https://tiles.openfreemap.org/styles/bright',
-//     center: [118.0, -2.5],
-//     zoom: 5
-// });
-
-// map.addControl(new maplibregl.NavigationControl());
-
-// let cityMarkers = [];
-// let districtMarkers = [];
-
-// map.on('load', () => {
-//     // Hide Nama Kota & Kecamatan bawaan Basemap
-//     const allLayers = map.getStyle().layers;
-//     allLayers.forEach(layer => {
-//         if (layer.type === 'symbol') {
-//             const id = layer.id.toLowerCase();
-//             const isCityOrDistrict = id.includes('city') || id.includes('town') || id.includes('capital') || id.includes('suburb');
-//             const isKelurahan = id.includes('village') || id.includes('neighbourhood') || id.includes('neighborhood') || id.includes('hamlet');
-
-//             if (isCityOrDistrict && !isKelurahan) {
-//                 map.setLayoutProperty(layer.id, 'visibility', 'none');
-//             }
-//         }
-//     });
-
-//     // =========================================================================
-//     // 2. REGISTER SOURCES (DARI MARTIN VECTOR TILES)
-//     // =========================================================================
-
-//     // Source Polygon Kecamatan
-//     map.addSource('map-kecamatan', {
-//         type: 'vector',
-//         tiles: ['http://localhost:3000/indonesia_map/{z}/{x}/{y}']
-//     });
-
-//     // Source Titik Kota (Merah)
-//     map.addSource('centroid-kota', {
-//         type: 'vector',
-//         tiles: ['http://localhost:3000/city_centroids/{z}/{x}/{y}']
-//     });
-
-//     // Source Titik Kecamatan (Oranye)
-//     map.addSource('centroid-kecamatan', {
-//         type: 'vector',
-//         tiles: ['http://localhost:3000/district_centroids/{z}/{x}/{y}']
-//     });
-
-//     // =========================================================================
-//     // 3. REGISTER LAYERS
-//     // =========================================================================
-
-//     // Polygon Dasar (Vector Tile Martin)
-//     map.addLayer({
-//         'id': 'polygon-base',
-//         'type': 'fill',
-//         'source': 'map-kecamatan',
-//         'source-layer': 'indonesia_map',
-//         'paint': {
-//             'fill-color': '#cbd5e1',
-//             'fill-opacity': 0.2,
-//             'fill-outline-color': '#64748b'
-//         }
-//     });
-
-//     // Polygon Aktif / Selection
-//     map.addLayer({
-//         'id': 'polygon-active',
-//         'type': 'fill',
-//         'source': 'map-kecamatan',
-//         'source-layer': 'indonesia_map',
-//         'paint': {
-//             'fill-color': '#2563eb',
-//             'fill-opacity': 0.65,
-//             'fill-outline-color': '#1d4ed8'
-//         },
-//         'filter': ['==', ['get', 'district'], '']
-//     });
-
-//     // Titik Kecamatan (Orange)
-//     map.addLayer({
-//         'id': 'titik-kecamatan',
-//         'type': 'circle',
-//         'source': 'centroid-kecamatan',
-//         'source-layer': 'district_centroids',
-//         'layout': { 'visibility': 'none' },
-//         'paint': {
-//             'circle-radius': 8,
-//             'circle-color': '#ff6b00',
-//             'circle-stroke-width': 2,
-//             'circle-stroke-color': '#ffffff'
-//         }
-//     });
-
-//     // Titik Kota (Merah)
-//     map.addLayer({
-//         'id': 'titik-kota',
-//         'type': 'circle',
-//         'source': 'centroid-kota',
-//         'source-layer': 'city_centroids',
-//         'paint': {
-//             'circle-radius': 11,
-//             'circle-color': '#ef4444',
-//             'circle-stroke-width': 2,
-//             'circle-stroke-color': '#ffffff'
-//         }
-//     });
-
-//     // =========================================================================
-//     // 4. GENERATE HTML MARKERS UNTUK LABEL
-//     // =========================================================================
-
-//     // Fungsi pembantu untuk membuat HTML Marker dari query tile yang ter-load
-//     const setupLabels = () => {
-//         // Render Label Kota
-//         const cities = map.queryRenderedFeatures({ layers: ['titik-kota'] });
-//         const addedCities = new Set();
-
-//         cities.forEach(f => {
-//             const cityName = f.properties.regency;
-//             if (cityName && !addedCities.has(cityName)) {
-//                 addedCities.add(cityName);
-
-//                 const el = document.createElement('div');
-//                 el.className = 'marker-label-kota';
-//                 el.innerText = cityName;
-//                 el.style.cssText = `
-//                     color: #dc2626;
-//                     font-weight: bold;
-//                     font-size: 13px;
-//                     font-family: sans-serif;
-//                     background: rgba(255, 255, 255, 0.9);
-//                     padding: 2px 6px;
-//                     border-radius: 4px;
-//                     border: 1px solid #fca5a5;
-//                     box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-//                     pointer-events: none;
-//                     white-space: nowrap;
-//                 `;
-
-//                 const marker = new maplibregl.Marker({ element: el, offset: [0, 22] })
-//                     .setLngLat(f.geometry.coordinates)
-//                     .addTo(map);
-
-//                 marker.getElement().style.pointerEvents = 'none';
-//                 cityMarkers.push(marker);
-//             }
-//         });
-//     };
-
-//     map.once('idle', setupLabels);
-
-//     // =========================================================================
-//     // 5. INTERAKSI & DRILL-DOWN
-//     // =========================================================================
-
-//     // Klik Titik Kota (Merah)
-//     map.on('click', 'titik-kota', (e) => {
-//         if (e.originalEvent) {
-//             e.originalEvent.cancelBubble = true;
-//         }
-
-//         if (!e.features || e.features.length === 0) return;
-//         const cityName = e.features[0].properties.regency;
-//         const clickCoords = e.lngLat;
-//         console.log("Klik Titik Kota:", cityName);
-
-//         // Highlight SELURUH POLYGON KECAMATAN yang ada di kota ini di layer polygon-active
-//         map.setFilter('polygon-active', ['==', ['get', 'regency'], cityName]);
-
-//         // 1. Filter layer titik kecamatan agar hanya menampilkan kecamatan di kota ini
-//         map.setFilter('titik-kecamatan', ['==', ['get', 'regency'], cityName]);
-
-//         // 2. Sembunyikan titik & label Kota
-//         map.setLayoutProperty('titik-kota', 'visibility', 'none');
-//         cityMarkers.forEach(m => m.getElement().style.display = 'none');
-
-//         // 3. Tampilkan titik Kecamatan khusus kota ini
-//         map.setLayoutProperty('titik-kecamatan', 'visibility', 'visible');
-
-//         // 4. Zoom ke lokasi Kota
-//         map.flyTo({
-//             center: clickCoords,
-//             zoom: 10,
-//             duration: 1300
-//         });
-//     });
-
-//     // Klik Kecamatan / Polygon
-//     const handleDistrictClick = (e) => {
-//         if (!e.features || e.features.length === 0) return;
-//         const props = e.features[0].properties;
-//         const districtName = props.district;
-
-//         if (!districtName) return;
-
-//         map.setFilter('polygon-active', ['==', ['get', 'district'], districtName]);
-
-//         if (e.lngLat) {
-//             map.flyTo({
-//                 center: e.lngLat,
-//                 zoom: 12,
-//                 duration: 1200
-//             });
-//         }
-//     };
-
-//     map.on('click', 'titik-kecamatan', handleDistrictClick);
-//     map.on('click', 'polygon-base', handleDistrictClick);
-
-//     // Reset ke Level Kota saat Zoom Out
-//     map.on('zoomend', () => {
-//         if (map.getZoom() < 8.5) {
-//             map.setFilter('polygon-active', ['==', ['get', 'district'], '']);
-//             map.setLayoutProperty('titik-kecamatan', 'visibility', 'none');
-
-//             map.setLayoutProperty('titik-kota', 'visibility', 'visible');
-//             cityMarkers.forEach(m => m.getElement().style.display = 'block');
-//         }
-//     });
-
-//     // Cursor Pointer
-//     const setCursor = (c) => () => map.getCanvas().style.cursor = c;
-//     map.on('mouseenter', 'titik-kota', setCursor('pointer'));
-//     map.on('mouseleave', 'titik-kota', setCursor(''));
-//     map.on('mouseenter', 'titik-kecamatan', setCursor('pointer'));
-//     map.on('mouseleave', 'titik-kecamatan', setCursor(''));
-// });
-
 
 // =========================================================================
-// 1. INISIALISASI PETA
+// 1. INISIALISASI PETA MAPLIBRE
 // =========================================================================
 const map = new maplibregl.Map({
     container: 'map',
@@ -245,7 +12,9 @@ const map = new maplibregl.Map({
 map.addControl(new maplibregl.NavigationControl());
 
 map.on('load', () => {
-    // Hide Nama Kota & Kecamatan bawaan Basemap OpenFreeMap
+    console.log("✅ MapLibre berhasil dimuat. Mengonfigurasi layer PostGIS...");
+
+    // Sembunyikan Label Kota Bawaan Basemap OpenFreeMap
     const allLayers = map.getStyle().layers;
     allLayers.forEach(layer => {
         if (layer.type === 'symbol') {
@@ -259,46 +28,42 @@ map.on('load', () => {
         }
     });
 
-    // Filter khusus: HANYA ambil polygon kecamatan (district_id > 4 digit)
-    const districtOnlyFilter = ['>', ['length', ['to-string', ['get', 'district_id']]], 4];
-
     // =========================================================================
-    // 2. REGISTER SOURCES (DARI MARTIN VECTOR TILES)
+    // 2. REGISTER SOURCES
     // =========================================================================
-
     map.addSource('map-kecamatan', {
         type: 'vector',
-        tiles: ['http://localhost:3000/indonesia_map/{z}/{x}/{y}']
+        url: 'http://localhost:3000/indonesia_map'
     });
 
     map.addSource('centroid-kota', {
         type: 'vector',
-        tiles: ['http://localhost:3000/city_centroids/{z}/{x}/{y}']
+        url: 'http://localhost:3000/city_centroid_view'
     });
 
     map.addSource('centroid-kecamatan', {
         type: 'vector',
-        tiles: ['http://localhost:3000/district_centroids/{z}/{x}/{y}']
+        url: 'http://localhost:3000/district_centroid_view'
     });
 
     // =========================================================================
     // 3. REGISTER LAYERS
     // =========================================================================
 
-    // Polygon Dasar (Sangat transparan agar basemap terlihat)
+    // 1. Polygon Dasar
     map.addLayer({
         'id': 'polygon-base',
         'type': 'fill',
         'source': 'map-kecamatan',
         'source-layer': 'indonesia_map',
         'paint': {
-            'fill-color': '#000000',
-            'fill-opacity': 0.05, // Hanya 5% opacity
-            'fill-outline-color': '#64748b'
+            'fill-color': '#3b82f6',
+            'fill-opacity': 0.1,
+            'fill-outline-color': '#2563eb'
         }
     });
 
-    // Polygon Aktif saat diklik (Biru Transparan)
+    // 2. Polygon Aktif (Highlight)
     map.addLayer({
         'id': 'polygon-active',
         'type': 'fill',
@@ -306,159 +71,146 @@ map.on('load', () => {
         'source-layer': 'indonesia_map',
         'paint': {
             'fill-color': '#2563eb',
-            'fill-opacity': 0.35, // Biru transparan elegan
+            'fill-opacity': 0.45,
             'fill-outline-color': '#1d4ed8'
         },
         'filter': ['==', ['get', 'district'], '___NO_SELECTION___']
     });
 
-    // 3. Titik Kecamatan (Circle Oranye)
+    // 3. TITIK KECAMATAN (CIRCLE ORANYE)
     map.addLayer({
         'id': 'titik-kecamatan',
         'type': 'circle',
         'source': 'centroid-kecamatan',
-        'source-layer': 'district_centroids',
+        'source-layer': 'district_centroid_view',
         'layout': {
             'visibility': 'none'
         },
         'paint': {
-            'circle-radius': 7,
-            'circle-color': '#ff6b00',
-            'circle-stroke-width': 2,
+            'circle-radius': 3,
+            'circle-color': '#f97316',
+            'circle-stroke-width': 2.5,
             'circle-stroke-color': '#ffffff'
         }
     });
 
-    // 4. Label Nama Kecamatan (PASTI MUNCUL KETIKA KOTA DIKLIK)
-    map.addLayer({
-        'id': 'label-kecamatan',
-        'type': 'symbol',
-        'source': 'centroid-kecamatan',
-        'source-layer': 'district_centroids',
-        'layout': {
-            'visibility': 'none',
-            'text-field': ['get', 'district'],
-            'text-size': 11,
-            'text-offset': [0, 1.2],
-            'text-anchor': 'top',
-            'text-allow-overlap': true,      // Paksa tampilkan tanpa disembunyikan MapLibre
-            'text-ignore-placement': true
-        },
-        'paint': {
-            'text-color': '#c2410c',
-            'text-halo-color': '#ffffff',
-            'text-halo-width': 2
-        }
-    });
-
-    // 5. Titik Kota (Circle Merah - LANGSUNG TAMPIL DIAWAL)
+    // 4. TITIK KOTA (CIRCLE MERAH)
     map.addLayer({
         'id': 'titik-kota',
         'type': 'circle',
         'source': 'centroid-kota',
-        'source-layer': 'city_centroids',
+        'source-layer': 'city_centroid_view',
         'layout': {
             'visibility': 'visible'
         },
         'paint': {
-            'circle-radius': 9,
-            'circle-color': '#ef4444',
-            'circle-stroke-width': 2,
+            'circle-radius': 5,
+            'circle-color': '#dc2626',
+            'circle-stroke-width': 2.5,
             'circle-stroke-color': '#ffffff'
         }
     });
 
-    // 6. Label Nama Kota (LANGSUNG TAMPIL DIAWAL)
-    map.addLayer({
-        'id': 'label-kota',
-        'type': 'symbol',
-        'source': 'centroid-kota',
-        'source-layer': 'city_centroids',
-        'layout': {
-            'visibility': 'visible',
-            'text-field': ['get', 'regency'],
-            'text-size': 12,
-            'text-offset': [0, 1.2],
-            'text-anchor': 'top',
-            'text-allow-overlap': true,      // Paksa tampilkan tanpa disembunyikan MapLibre
-            'text-ignore-placement': true
-        },
-        'paint': {
-            'text-color': '#dc2626',
-            'text-halo-color': '#ffffff',
-            'text-halo-width': 2
+    // =========================================================================
+    // 4. EVENT RE-FILTER SAAT TILE SELESAI DI-LOAD DARI SERVER
+    // =========================================================================
+    map.on('sourcedata', (e) => {
+        if (e.sourceId === 'centroid-kecamatan' && e.isSourceLoaded) {
+            if (typeof applyFilters === 'function') {
+                applyFilters();
+            }
         }
     });
 
     // =========================================================================
-    // 4. INTERAKSI & DRILL-DOWN
+    // 5. INTERAKSI KLIK PETA
     // =========================================================================
-
-    // Klik Titik Kota (Merah)
     map.on('click', 'titik-kota', (e) => {
-        if (e.originalEvent) {
-            e.originalEvent.cancelBubble = true;
-        }
-
         if (!e.features || e.features.length === 0) return;
         const cityName = e.features[0].properties.regency;
-        const clickCoords = e.lngLat;
 
-        console.log("Klik Titik Kota:", cityName);
-
-        // Highlight HANYA polygon kecamatan di kota ini
-        map.setFilter('polygon-active', ['all', districtOnlyFilter, ['==', ['get', 'regency'], cityName]]);
-
-        // Filter titik & label kecamatan
-        map.setFilter('titik-kecamatan', ['==', ['get', 'regency'], cityName]);
-        map.setFilter('label-kecamatan', ['==', ['get', 'regency'], cityName]);
-
-        // Sembunyikan titik/label Kota
-        map.setLayoutProperty('titik-kota', 'visibility', 'none');
-        map.setLayoutProperty('label-kota', 'visibility', 'none');
-
-        // Tampilkan titik ORANYE & NAMA KECAMATAN
-        map.setLayoutProperty('titik-kecamatan', 'visibility', 'visible');
-        map.setLayoutProperty('label-kecamatan', 'visibility', 'visible');
-
-        map.flyTo({ center: clickCoords, zoom: 10, duration: 1300 });
+        const citySelect = document.getElementById('filter-city');
+        if (citySelect) {
+            citySelect.value = cityName;
+            citySelect.dispatchEvent(new Event('change'));
+        }
     });
 
-    // Klik Kecamatan / Polygon
-    const handleDistrictClick = (e) => {
+    const handleDistrictClick = async (e) => {
         if (!e.features || e.features.length === 0) return;
+
         const props = e.features[0].properties;
+        const cityName = props.regency;
         const districtName = props.district;
 
-        if (!districtName) return;
+        if (!cityName || !districtName) return;
 
-        map.setFilter('polygon-active', ['all', districtOnlyFilter, ['==', ['get', 'district'], districtName]]);
+        const citySelect = document.getElementById('filter-city');
+        const districtSelect = document.getElementById('filter-district');
+
+        if (citySelect && citySelect.value !== cityName) {
+            citySelect.value = cityName;
+            if (typeof populateDistrictDropdown === 'function') {
+                await populateDistrictDropdown(cityName);
+            }
+        }
+
+        if (districtSelect) {
+            districtSelect.value = districtName;
+        }
+
+        if (typeof filterState !== 'undefined') {
+            filterState.city = cityName;
+            filterState.district = districtName;
+        }
+
+        if (typeof applyFilters === 'function') {
+            applyFilters();
+        }
 
         if (e.lngLat) {
             map.flyTo({ center: e.lngLat, zoom: 12, duration: 1200 });
         }
     };
 
-    map.on('click', 'titik-kecamatan', handleDistrictClick);
     map.on('click', 'polygon-base', handleDistrictClick);
+    map.on('click', 'titik-kecamatan', handleDistrictClick);
 
-    // Reset ke Level Kota saat Zoom Out
+    // =========================================================================
+    // DETEKTOR ZOOM MOUSE: DYNAMIC FILTER RESET SAAT ZOOM OUT
+    // =========================================================================
     map.on('zoomend', () => {
-        if (map.getZoom() < 8.5) {
-            map.setFilter('polygon-active', ['all', districtOnlyFilter, ['==', ['get', 'district'], '___NO_SELECTION___']]);
+        const currentZoom = map.getZoom();
 
-            map.setLayoutProperty('titik-kecamatan', 'visibility', 'none');
-            map.setLayoutProperty('label-kecamatan', 'visibility', 'none');
+        // 1. Jika Zoom Out ke Tampilan Nasional / Pulau (Zoom < 8.5)
+        if (currentZoom < 8.5) {
+            const citySelect = document.getElementById('filter-city');
+            if (citySelect && citySelect.value !== 'all') {
+                citySelect.value = 'all';
+                citySelect.dispatchEvent(new Event('change')); // Reset total ke Kota/Merah
+            }
+        }
+        // 2. Jika sedang memilih 1 Kecamatan SPESIFIK, tapi user ZOOM OUT (Zoom < 11.5)
+        else if (currentZoom < 11.5 && typeof filterState !== 'undefined' && filterState.district !== 'all') {
+            const districtSelect = document.getElementById('filter-district');
 
-            map.setLayoutProperty('titik-kota', 'visibility', 'visible');
-            map.setLayoutProperty('label-kota', 'visibility', 'visible');
+            if (districtSelect) {
+                districtSelect.value = 'all'; // Balikkan dropdown ke 'Semua Kecamatan'
+                filterState.district = 'all';  // Reset state
+
+                if (typeof applyFilters === 'function') {
+                    applyFilters();            // 🔥 TAMPILKAN KEMBALI SEMUA TITIK OREN DI KOTA TSB!
+                }
+                console.log("🔍 Auto-expand titik oranye se-kota karena Zoom Out!");
+            }
         }
     });
-
-    // Cursor Pointer
+    // Hover Cursor
     const setCursor = (c) => () => map.getCanvas().style.cursor = c;
     map.on('mouseenter', 'titik-kota', setCursor('pointer'));
     map.on('mouseleave', 'titik-kota', setCursor(''));
     map.on('mouseenter', 'titik-kecamatan', setCursor('pointer'));
     map.on('mouseleave', 'titik-kecamatan', setCursor(''));
+    map.on('mouseenter', 'polygon-base', setCursor('pointer'));
+    map.on('mouseleave', 'polygon-base', setCursor(''));
 });

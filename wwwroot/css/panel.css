@@ -1,7 +1,6 @@
 /* =========================================================================
    PANEL FILTER SIDEBAR (FLOATING RIGHT)
    ========================================================================= */
-
 .filter-sidebar {
     position: absolute;
     top: 20px;
@@ -9,68 +8,65 @@
     width: 300px;
     max-height: calc(100vh - 80px);
     overflow-y: auto;
-    
     /* Style Kaca Transparan (Glassmorphism) */
     background: rgba(255, 255, 255, 0.92);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    
     border-radius: 12px;
     padding: 18px 20px;
     border: 1px solid rgba(255, 255, 255, 0.6);
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 
-                0 8px 10px -6px rgba(0, 0, 0, 0.1);
-    
-    z-index: 10; /* Memastikan panel melayang di atas canvas peta */
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    z-index: 10; /* Panel melayang di atas canvas peta */
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     transition: all 0.3s ease;
 }
 
-/* Judul Panel */
-.filter-sidebar h3 {
-    margin-top: 0;
-    margin-bottom: 16px;
-    font-size: 15px;
-    font-weight: 700;
-    color: #0f172a;
-    border-bottom: 2px solid #2563eb;
-    padding-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
+    /* Judul Panel */
+    .filter-sidebar h3 {
+        margin-top: 0;
+        margin-bottom: 16px;
+        font-size: 15px;
+        font-weight: 700;
+        color: #0f172a;
+        border-bottom: 2px solid #2563eb;
+        padding-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
 
 /* Group Elemen Filter */
 .filter-group {
     margin-bottom: 14px;
 }
 
-.filter-group:last-child {
-    margin-bottom: 0;
-}
+    .filter-group:last-child {
+        margin-bottom: 0;
+    }
 
-/* Label Input/Dropdown */
-.filter-group label {
-    display: block;
-    font-size: 12px;
-    font-weight: 600;
-    color: #475569;
-    margin-bottom: 6px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
+    /* Label Input/Dropdown */
+    .filter-group label {
+        display: block;
+        font-size: 11px;
+        font-weight: 700;
+        color: #475569;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
 
-/* Form Control (Select & Input Range) */
+/* Form Control (Select/Dropdown) */
 .filter-control {
     width: 100%;
-    padding: 8px 12px;
+    padding: 9px 12px;
     border-radius: 8px;
     border: 1px solid #cbd5e1;
     font-size: 13px;
     background-color: #ffffff;
     color: #1e293b;
     box-sizing: border-box;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 /* Focus State untuk Dropdown */
@@ -80,38 +76,27 @@ select.filter-control:focus {
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
-/* Custom Style untuk Range Slider (Transparansi) */
-input[type="range"].filter-control {
-    padding: 0;
-    height: 6px;
-    background: #e2e8f0;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
+/* Disabled State khusus Dropdown Kecamatan sebelum Kota dipilih */
+select.filter-control:disabled {
+    background-color: #f1f5f9;
+    color: #94a3b8;
+    border-color: #e2e8f0;
+    cursor: not-allowed;
+    opacity: 0.8;
 }
 
-input[type="range"].filter-control::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    height: 16px;
-    width: 16px;
-    border-radius: 50%;
-    background: #2563eb;
-    cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    transition: transform 0.1s ease;
+/* Hover State saat aktif */
+select.filter-control:not(:disabled):hover {
+    border-color: #94a3b8;
 }
 
-input[type="range"].filter-control::-webkit-slider-thumb:hover {
-    transform: scale(1.15);
-}
-
-/* Responsive Handling untuk Layar HP */
+/* Responsive Handling untuk Layar Mobile */
 @media (max-width: 640px) {
     .filter-sidebar {
         top: auto;
         bottom: 20px;
-        right: 10px;
-        left: 10px;
+        right: 12px;
+        left: 12px;
         width: auto;
         max-height: 40vh;
     }

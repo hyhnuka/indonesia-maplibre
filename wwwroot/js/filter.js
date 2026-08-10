@@ -1,210 +1,221 @@
-﻿// Central State untuk Menyimpan Filter
-const filterState = {
+﻿const filterState = {
     city: 'all',
-    metric: 'total_penduduk', // total_penduduk, pria, atau wanita
-    opacity: 0.7
+    district: 'all'
 };
 
-// Global Variable untuk menyimpan GeoJSON utuh (dipakai untuk BBox Zoom Presisi)
-let rawGeojsonData = null;
-
-// 1. FUNGSI DINAMIS: Mengambil Daftar Kota Unik dari GeoJSON
+// 1. Populate Dropdown Kota
 async function populateCityDropdown() {
     try {
-        const response = await fetch('/data/map.geojson');
-        if (!response.ok) return;
-        rawGeojsonData = await response.json();
+        const response = await fetch('/api/map/cities');
+        if (!response.ok) throw new Error('Gagal memuat data kota dari API');
 
-        // Ambil semua nama kota/kabupaten unik & buang nilai kosong
-        const citiesSet = new Set();
-        rawGeojsonData.features.forEach(f => {
-            const props = f.properties || {};
-            const cityName = props.regency || props.kabupaten || props.kota;
-            if (cityName && cityName.trim() !== '') {
-                citiesSet.add(cityName.trim());
-            }
-        });
-
-        // Urutkan nama kota sesuai abjad (A-Z)
-        const sortedCities = Array.from(citiesSet).sort();
-
-        // Masukkan ke dalam elemen <select id="filter-city">
+        const cities = await response.json();
         const citySelect = document.getElementById('filter-city');
-        if (citySelect) {
-            citySelect.innerHTML = '<option value="all">Semua Wilayah</option>';
 
-            sortedCities.forEach(cityName => {
+        if (citySelect) {
+            citySelect.innerHTML = '<option value="all" data-lng="118.0" data-lat="-2.5">Semua Kota / Kabupaten</option>';
+            cities.forEach(item => {
                 const option = document.createElement('option');
-                option.value = cityName;
-                option.textContent = cityName;
+                option.value = item.regency;
+                option.textContent = item.regency;
+                // Simpan koordinat di atribut data HTML
+                option.dataset.lng = item.lng;
+                option.dataset.lat = item.lat;
                 citySelect.appendChild(option);
             });
-            console.log(`✅ Berhasil memuat ${sortedCities.length} kota ke dropdown filter.`);
+            console.log(`✅ ${cities.length} kota dimuat.`);
         }
     } catch (err) {
-        console.error("Gagal mengisi dropdown kota secara dinamis:", err);
+        console.error("Error populateCityDropdown:", err);
     }
 }
 
-// 2. FUNGSI UTAMA: Menerapkan Filter Tampilan & Visualisasi
+// 2. Populate Dropdown Kecamatan
+// async function populateDistrictDropdown(cityName) {
+//     const districtSelect = document.getElementById('filter-district');
+//     if (!districtSelect) return;
+
+//     districtSelect.innerHTML = '<option value="all">Semua Kecamatan</option>';
+
+//     if (cityName === 'all') {
+//         districtSelect.disabled = true;
+//         filterState.district = 'all';
+//         return;
+//     }
+
+//     try {
+//         const response = await fetch(`/api/map/districts?city=${encodeURIComponent(cityName)}`);
+//         if (!response.ok) throw new Error('Gagal memuat kecamatan');
+
+//         const districts = await response.json();
+
+//         districts.forEach(item => {
+//             const option = document.createElement('option');
+//             option.value = item.district;
+//             option.textContent = item.district;
+//             option.dataset.lng = item.lng;
+//             option.dataset.lat = item.lat;
+//             districtSelect.appendChild(option);
+//         });
+
+//         districtSelect.disabled = false;
+//         console.log(`✅ ${districts.length} kecamatan dimuat untuk ${cityName}`);
+//     } catch (err) {
+//         console.error("Error populateDistrictDropdown:", err);
+//     }
+// }
+async function populateDistrictDropdown(cityName) {
+    const districtSelect = document.getElementById('filter-district');
+    if (!districtSelect) return;
+
+    districtSelect.innerHTML = '<option value="all">Semua Kecamatan</option>';
+
+    if (cityName === 'all') {
+        districtSelect.disabled = true;
+        filterState.district = 'all';
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/map/districts?city=${encodeURIComponent(cityName)}`);
+        if (!response.ok) throw new Error('Gagal memuat kecamatan');
+
+        const districts = await response.json();
+
+        districts.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item.district;
+            option.textContent = item.district;
+            option.dataset.lng = item.lng;
+            option.dataset.lat = item.lat;
+            districtSelect.appendChild(option);
+        });
+
+        districtSelect.disabled = false;
+    } catch (err) {
+        console.error("Error populateDistrictDropdown:", err);
+    }
+}
+
+// 3. Terapkan Filter Visual di Peta
+// =========================================================================
+// PENERAPAN FILTER VISUAL KE MAPLIBRE
+// =========================================================================
 function applyFilters() {
-    if (!map || !map.isStyleLoaded()) return;
+    if (typeof map === 'undefined' || !map.isStyleLoaded()) return;
 
-    const polygonLayer = map.getLayer('polygon-base') ? 'polygon-base' : null;
-    const activePolygonLayer = map.getLayer('polygon-active') ? 'polygon-active' : null;
+    // Pastikan layer titik-kecamatan ada
+    if (!map.getLayer('titik-kecamatan')) return;
 
-    if (!polygonLayer) return;
-
-    // Filter Wilayah
-    if (filterState.city !== 'all') {
-        // Cocokkan properti regency/kabupaten/kota
+    // ----------------------------------------------------
+    // CASE 1: KOTA PILIHAN USER (Tampilkan Seluruh Titik Oren di Kota Tsb)
+    // ----------------------------------------------------
+    if (filterState.city !== 'all' && filterState.district === 'all') {
         const cityFilter = ['==', ['get', 'regency'], filterState.city];
 
-        map.setFilter(polygonLayer, cityFilter);
+        // Tampilkan layer titik & label kecamatan
+        map.setLayoutProperty('titik-kecamatan', 'visibility', 'visible');
+        map.setFilter('titik-kecamatan', cityFilter);
 
-        if (map.getLayer('titik-kecamatan')) {
-            map.setFilter('titik-kecamatan', cityFilter);
-            map.setLayoutProperty('titik-kecamatan', 'visibility', 'visible');
-        }
-
-        if (map.getLayer('titik-kota')) {
-            map.setLayoutProperty('titik-kota', 'visibility', 'none');
+        if (map.getLayer('label-kecamatan')) {
+            map.setLayoutProperty('label-kecamatan', 'visibility', 'visible');
+            map.setFilter('label-kecamatan', cityFilter);
         }
 
-        if (typeof districtMarkers !== 'undefined') {
-            districtMarkers.forEach(item => {
-                item.element.style.display = (item.regency === filterState.city) ? 'block' : 'none';
-            });
-        }
-        if (typeof cityMarkers !== 'undefined') {
-            cityMarkers.forEach(m => m.getElement().style.display = 'none');
-        }
+        // Sembunyikan titik/label kota agar tidak menumpuk
+        if (map.getLayer('titik-kota')) map.setLayoutProperty('titik-kota', 'visibility', 'none');
+        if (map.getLayer('label-kota')) map.setLayoutProperty('label-kota', 'visibility', 'none');
 
-    } else {
-        // Reset jika memilih "Semua Wilayah"
-        map.setFilter(polygonLayer, null);
-
-        if (map.getLayer('titik-kecamatan')) {
-            map.setLayoutProperty('titik-kecamatan', 'visibility', 'none');
-        }
-        if (map.getLayer('titik-kota')) {
-            map.setLayoutProperty('titik-kota', 'visibility', 'visible');
-        }
-
-        if (typeof districtMarkers !== 'undefined') {
-            districtMarkers.forEach(item => item.element.style.display = 'none');
-        }
-        if (typeof cityMarkers !== 'undefined') {
-            cityMarkers.forEach(m => m.getElement().style.display = 'block');
-        }
-
-        if (activePolygonLayer) {
-            map.setFilter(activePolygonLayer, ['==', ['get', 'district'], '']);
+        // Highlight polygon kecamatan di kota tsb
+        if (map.getLayer('polygon-active')) {
+            map.setFilter('polygon-active', cityFilter);
         }
     }
+    // ----------------------------------------------------
+    // CASE 2: KOTA & KECAMATAN TERPILIH (Tampilkan 1 Titik Oren Spesifik)
+    // ----------------------------------------------------
+    else if (filterState.city !== 'all' && filterState.district !== 'all') {
+        const districtFilter = ['==', ['get', 'district'], filterState.district];
 
-    // Update Gradasi Warna (Choropleth)
-    updateChoroplethColor(polygonLayer, filterState.metric);
-}
+        map.setLayoutProperty('titik-kecamatan', 'visibility', 'visible');
+        map.setFilter('titik-kecamatan', districtFilter);
 
-// 3. FUNGSI UPDATE GRADASI WARNA DINAMIS
-function updateChoroplethColor(layerId, metricKey) {
-    if (!map.getLayer(layerId)) return;
+        if (map.getLayer('label-kecamatan')) {
+            map.setLayoutProperty('label-kecamatan', 'visibility', 'visible');
+            map.setFilter('label-kecamatan', districtFilter);
+        }
 
-    map.setPaintProperty(layerId, 'fill-opacity', filterState.opacity);
-
-    let colorExpression = [];
-
-    if (metricKey === 'pria') {
-        colorExpression = [
-            'interpolate', ['linear'], ['get', 'pria'],
-            0,     '#eff3ff',
-            12500, '#bdd7e7',
-            25000, '#6baed6',
-            37500, '#3182bd',
-            50000, '#08519c'
-        ];
-    } else if (metricKey === 'wanita') {
-        colorExpression = [
-            'interpolate', ['linear'], ['get', 'wanita'],
-            0,     '#fde0ef',
-            12500, '#f1b6da',
-            25000, '#de77ae',
-            37500, '#c51b7d',
-            50000, '#8e0152'
-        ];
-    } else {
-        colorExpression = [
-            'interpolate', ['linear'], ['get', 'total_penduduk'],
-            0,      '#fee5d9',
-            25000,  '#fcae91',
-            50000,  '#fb6a4a',
-            75000,  '#de2d26',
-            100000, '#a50f15'
-        ];
+        if (map.getLayer('polygon-active')) {
+            map.setFilter('polygon-active', districtFilter);
+        }
     }
+    // ----------------------------------------------------
+    // CASE 3: RESET "SEMUA WILAYAH"
+    // ----------------------------------------------------
+    else {
+        // Sembunyikan titik kecamatan
+        map.setLayoutProperty('titik-kecamatan', 'visibility', 'none');
+        if (map.getLayer('label-kecamatan')) map.setLayoutProperty('label-kecamatan', 'visibility', 'none');
 
-    map.setPaintProperty(layerId, 'fill-color', colorExpression);
+        // Tampilkan kembali titik merah kota
+        if (map.getLayer('titik-kota')) map.setLayoutProperty('titik-kota', 'visibility', 'visible');
+        if (map.getLayer('label-kota')) map.setLayoutProperty('label-kota', 'visibility', 'visible');
+
+        // Reset polygon highlight
+        if (map.getLayer('polygon-active')) {
+            map.setFilter('polygon-active', ['==', ['get', 'district'], '___NO_SELECTION___']);
+        }
+    }
 }
 
-// 4. EVENT LISTENERS
+
+// 4. Event Listener Form Filter
 document.addEventListener('DOMContentLoaded', () => {
-
-    // Populasikan Dropdown Kota
     populateCityDropdown();
 
-    // Event Dropdown Pilih Kota
-    document.getElementById('filter-city')?.addEventListener('change', (e) => {
-        filterState.city = e.target.value;
+    // Event saat Kota dipilih
+    document.getElementById('filter-city')?.addEventListener('change', async (e) => {
+        const select = e.target;
+        const selectedOption = select.options[select.selectedIndex];
 
-        if (filterState.city !== 'all' && rawGeojsonData) {
-            // 🎯 FIX ZOOM: Ambil seluruh fitur polygon milik kota tersebut dari GeoJSON
-            const cityFeatures = rawGeojsonData.features.filter(f => {
-                const props = f.properties || {};
-                const name = props.regency || props.kabupaten || props.kota;
-                return name === filterState.city;
-            });
+        filterState.city = select.value;
+        filterState.district = 'all';
 
-            if (cityFeatures.length > 0) {
-                // Hitung Bounding Box PRESISI gabungan seluruh polygon & titik kecamatan kota ini
-                const cityCollection = turf.featureCollection(cityFeatures);
-                const bbox = turf.bbox(cityCollection);
+        await populateDistrictDropdown(filterState.city);
 
-                // Zoom ke seluruh wilayah kota + titik oren dengan aman
-                map.fitBounds(bbox, {
-                    padding: { top: 90, bottom: 90, left: 90, right: 380 }, // Ruang kanan untuk panel filter
-                    maxZoom: 11, // Batas zoom aman agar tidak terlalu dekat
-                    duration: 1300
-                });
-            }
-        } else {
-            // Reset Zoom ke Indonesia jika pilih "Semua Wilayah"
-            map.flyTo({ center: [118.0, -2.5], zoom: 5, duration: 1300 });
+        // Langsung zoom ke koordinat dari database!
+        const lng = parseFloat(selectedOption.dataset.lng);
+        const lat = parseFloat(selectedOption.dataset.lat);
+
+        if (!isNaN(lng) && !isNaN(lat)) {
+            const targetZoom = filterState.city === 'all' ? 5 : 10;
+            map.flyTo({ center: [lng, lat], zoom: targetZoom, duration: 1300 });
         }
 
         applyFilters();
     });
 
-    // Event Dropdown Metrik Data
-    document.getElementById('filter-metric')?.addEventListener('change', (e) => {
-        filterState.metric = e.target.value;
-        applyFilters();
-    });
+    // Event saat Kecamatan dipilih
+    document.getElementById('filter-district')?.addEventListener('change', (e) => {
+        const select = e.target;
+        const selectedOption = select.options[select.selectedIndex];
 
-    // Event Slider Transparansi Area
-    document.getElementById('filter-opacity')?.addEventListener('input', (e) => {
-        filterState.opacity = parseFloat(e.target.value);
-        if (map.getLayer('polygon-base')) {
-            map.setPaintProperty('polygon-base', 'fill-opacity', filterState.opacity);
+        filterState.district = select.value;
+
+        const lng = parseFloat(selectedOption.dataset.lng);
+        const lat = parseFloat(selectedOption.dataset.lat);
+
+        if (!isNaN(lng) && !isNaN(lat)) {
+            const targetZoom = filterState.district === 'all' ? 10 : 12;
+            map.flyTo({ center: [lng, lat], zoom: targetZoom, duration: 1200 });
         }
+
+        applyFilters();
     });
 });
 
-// Jalankan filter otomatis setelah peta selesai di-load
 if (typeof map !== 'undefined') {
     map.on('load', () => {
-        setTimeout(() => {
-            applyFilters();
-        }, 600);
+        setTimeout(applyFilters, 500);
     });
 }
