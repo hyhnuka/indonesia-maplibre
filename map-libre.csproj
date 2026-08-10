@@ -5,6 +5,10 @@
     <Content Remove="**\*.__projection.g.*" />
     <None Remove="**\*.__projection.g.*" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.79" />
+    <PackageReference Include="Npgsql" Version="10.0.3" />
+  </ItemGroup>
 	
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>

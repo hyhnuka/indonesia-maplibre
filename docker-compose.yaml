@@ -1,31 +1,30 @@
 version: '3.8'
 
 services:
-  # 1. Container Database PostGIS
-  db:
-    image: postgis/postgis:16-3.4
+  ooh_postgis:
+    image: postgis/postgis:latest
     container_name: ooh_postgis
-    restart: always
     environment:
+      POSTGRES_DB: ooh_gis
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: ooh_gis
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - postgis_data:/var/lib/postgresql/data
+    restart: always
 
-  # 2. Container Martin Tile Server
-  martin:
+  ooh_martin:
     image: ghcr.io/maplibre/martin:v0.13.0
     container_name: ooh_martin
-    restart: always
     environment:
-      DATABASE_URL: postgres://postgres:postgres@db:5432/ooh_gis
+      # Pastikan DB di bagian akhir adalah ooh_gis!
+      DATABASE_URL: postgresql://postgres:postgres@ooh_postgis:5432/ooh_gis
     ports:
       - "3000:3000"
     depends_on:
-      - db
+      - ooh_postgis
+    restart: always
 
 volumes:
-  pgdata:
+  postgis_data:
