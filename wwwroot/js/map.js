@@ -12,7 +12,7 @@ const map = new maplibregl.Map({
 map.addControl(new maplibregl.NavigationControl());
 
 map.on('load', () => {
-    console.log("✅ MapLibre berhasil dimuat. Mengonfigurasi layer PostGIS...");
+    console.log("MapLibre berhasil dimuat. Mengonfigurasi layer PostGIS...");
 
     // Sembunyikan Label Kota Bawaan Basemap OpenFreeMap
     const allLayers = map.getStyle().layers;
@@ -89,7 +89,7 @@ map.on('load', () => {
         'paint': {
             'circle-radius': 3,
             'circle-color': '#f97316',
-            'circle-stroke-width': 2.5,
+            'circle-stroke-width': 1,
             'circle-stroke-color': '#ffffff'
         }
     });
@@ -106,7 +106,7 @@ map.on('load', () => {
         'paint': {
             'circle-radius': 5,
             'circle-color': '#dc2626',
-            'circle-stroke-width': 2.5,
+            'circle-stroke-width': 1,
             'circle-stroke-color': '#ffffff'
         }
     });
@@ -199,7 +199,7 @@ map.on('load', () => {
                 filterState.district = 'all';  // Reset state
 
                 if (typeof applyFilters === 'function') {
-                    applyFilters();            // 🔥 TAMPILKAN KEMBALI SEMUA TITIK OREN DI KOTA TSB!
+                    applyFilters();            // menampilkan kembali semua titik kecamatan (oren)
                 }
                 console.log("🔍 Auto-expand titik oranye se-kota karena Zoom Out!");
             }
