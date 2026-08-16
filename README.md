@@ -1,4 +1,3 @@
-```markdown
 # Indonesia MapLibre Analytics & Demographics
 
 Aplikasi WebGIS interaktif berbasis **ASP.NET Core (.NET 8 MVC)**, **MapLibre GL JS**, dan **PostgreSQL / PostGIS** dengan **Martin Tile Server** untuk analisis data kependudukan dan visualisasi peta tematik (*Choropleth*) di Indonesia[cite: 1].
@@ -101,8 +100,5 @@ Setelah aplikasi berjalan, buka browser dan akses URL yang tertera pada terminal
 
 * **Dynamic Insight Panel**: Analisis metrik kependudukan dan visualisasi piramida penduduk per kecamatan.
 
-
-
 ```
 
-```
