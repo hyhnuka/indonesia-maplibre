@@ -1,4 +1,5 @@
 
+
 // =========================================================================
 // 1. INISIALISASI PETA MAPLIBRE
 // =========================================================================
@@ -50,7 +51,7 @@ map.on('load', () => {
     // 3. REGISTER LAYERS
     // =========================================================================
 
-    // 1. Polygon Dasar
+    // 1. Polygon Dasar (Layer Utama untuk Choropleth)
     map.addLayer({
         'id': 'polygon-base',
         'type': 'fill',
@@ -58,26 +59,26 @@ map.on('load', () => {
         'source-layer': 'indonesia_map',
         'paint': {
             'fill-color': '#3b82f6',
-            'fill-opacity': 0.1,
-            'fill-outline-color': '#2563eb'
+            'fill-opacity': 0.25,
+            'fill-outline-color': '#ffffff'
         }
     });
 
-    // 2. Polygon Aktif (Highlight)
+    // 2. Polygon Aktif (Highlight Seleksi Wilayah)
     map.addLayer({
         'id': 'polygon-active',
-        'type': 'fill',
+        'type': 'line',
         'source': 'map-kecamatan',
         'source-layer': 'indonesia_map',
         'paint': {
-            'fill-color': '#2563eb',
-            'fill-opacity': 0.45,
-            'fill-outline-color': '#1d4ed8'
+            'line-color': '#6366F1',
+            'line-width': 2.5,
+            'line-opacity': 1
         },
         'filter': ['==', ['get', 'district'], '___NO_SELECTION___']
     });
 
-    // 3. TITIK KECAMATAN (CIRCLE ORANYE)
+    // 3. TITIK KECAMATAN (CIRCLE)
     map.addLayer({
         'id': 'titik-kecamatan',
         'type': 'circle',
@@ -87,8 +88,8 @@ map.on('load', () => {
             'visibility': 'none'
         },
         'paint': {
-            'circle-radius': 3,
-            'circle-color': '#f97316',
+            'circle-radius': 4,
+            'circle-color': '#334155',
             'circle-stroke-width': 1,
             'circle-stroke-color': '#ffffff'
         }
@@ -111,19 +112,14 @@ map.on('load', () => {
         }
     });
 
-    // =========================================================================
-    // 4. EVENT RE-FILTER SAAT TILE SELESAI DI-LOAD DARI SERVER
-    // =========================================================================
-    map.on('sourcedata', (e) => {
-        if (e.sourceId === 'centroid-kecamatan' && e.isSourceLoaded) {
-            if (typeof applyFilters === 'function') {
-                applyFilters();
-            }
+    map.once('idle', () => {
+        if (typeof applyFilters === 'function') {
+            applyFilters();
         }
     });
 
     // =========================================================================
-    // 5. INTERAKSI KLIK PETA
+    // 4. INTERAKSI KLIK PETA
     // =========================================================================
     map.on('click', 'titik-kota', (e) => {
         if (!e.features || e.features.length === 0) return;
@@ -142,6 +138,7 @@ map.on('load', () => {
         const props = e.features[0].properties;
         const cityName = props.regency;
         const districtName = props.district;
+        const districtId = props.district_id || props.district_code || props.DistrictId;
 
         if (!cityName || !districtName) return;
 
@@ -171,41 +168,50 @@ map.on('load', () => {
         if (e.lngLat) {
             map.flyTo({ center: e.lngLat, zoom: 12, duration: 1200 });
         }
+
+        if (districtId) {
+            try {
+                const sidebarRight = document.getElementById('sidebar-right');
+                const btnInsight = document.getElementById('nav-btn-insight');
+                if (sidebarRight && sidebarRight.classList.contains('collapsed')) {
+                    sidebarRight.classList.remove('collapsed');
+                    if (btnInsight) btnInsight.classList.add('active');
+                    map.resize();
+                }
+
+                console.log(`Fetching data detail insight untuk District ID: ${districtId}`);
+
+                const response = await fetch(`/api/demographics/detail/${districtId}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (typeof updateInsightPanel === 'function') {
+                        updateInsightPanel(data);
+                    }
+                } else {
+                    console.warn(`Gagal mengambil detail insight. Status HTTP: ${response.status}`);
+                }
+            } catch (err) {
+                console.error("Error Fetching Insight:", err);
+            }
+        }
     };
 
     map.on('click', 'polygon-base', handleDistrictClick);
     map.on('click', 'titik-kecamatan', handleDistrictClick);
 
-    // =========================================================================
-    // DETEKTOR ZOOM MOUSE: DYNAMIC FILTER RESET SAAT ZOOM OUT
-    // =========================================================================
     map.on('zoomend', () => {
-        const currentZoom = map.getZoom();
+        if (typeof isProgrammaticZoom !== 'undefined' && isProgrammaticZoom) return;
 
-        // 1. Jika Zoom Out ke Tampilan Nasional / Pulau (Zoom < 8.5)
-        if (currentZoom < 8.5) {
+        const currentZoom = map.getZoom();
+        if (currentZoom < 7.5) {
             const citySelect = document.getElementById('filter-city');
             if (citySelect && citySelect.value !== 'all') {
                 citySelect.value = 'all';
-                citySelect.dispatchEvent(new Event('change')); // Reset total ke Kota/Merah
-            }
-        }
-        // 2. Jika sedang memilih 1 Kecamatan SPESIFIK, tapi user ZOOM OUT (Zoom < 11.5)
-        else if (currentZoom < 11.5 && typeof filterState !== 'undefined' && filterState.district !== 'all') {
-            const districtSelect = document.getElementById('filter-district');
-
-            if (districtSelect) {
-                districtSelect.value = 'all'; // Balikkan dropdown ke 'Semua Kecamatan'
-                filterState.district = 'all';  // Reset state
-
-                if (typeof applyFilters === 'function') {
-                    applyFilters();            // menampilkan kembali semua titik kecamatan (oren)
-                }
-                console.log("🔍 Auto-expand titik oranye se-kota karena Zoom Out!");
+                citySelect.dispatchEvent(new Event('change'));
             }
         }
     });
-    // Hover Cursor
+
     const setCursor = (c) => () => map.getCanvas().style.cursor = c;
     map.on('mouseenter', 'titik-kota', setCursor('pointer'));
     map.on('mouseleave', 'titik-kota', setCursor(''));
@@ -214,3 +220,201 @@ map.on('load', () => {
     map.on('mouseenter', 'polygon-base', setCursor('pointer'));
     map.on('mouseleave', 'polygon-base', setCursor(''));
 });
+
+// =========================================================================
+// HELPER: ALGORITMA JENKS NATURAL BREAKS (3 KELAS)
+// =========================================================================
+function getVariance(arr) {
+    if (!arr || arr.length === 0) return 0;
+    const mean = arr.reduce((a, b) => a + b, 0) / arr.length;
+    return arr.reduce((a, b) => a + Math.pow(b - mean, 2), 0);
+}
+
+function getJenks3Breaks(data) {
+    if (!data || data.length === 0) return [0, 0];
+
+    const sorted = [...data].sort((a, b) => a - b);
+    const n = sorted.length;
+
+    if (n <= 3) {
+        const b1 = sorted[Math.floor(n / 3)] || sorted[0];
+        const b2 = sorted[Math.floor((2 * n) / 3)] || sorted[n - 1];
+        return [b1, b2];
+    }
+
+    let bestVariance = Infinity;
+    let bestBreaks = [sorted[Math.floor(n / 3)], sorted[Math.floor((2 * n) / 3)]];
+
+    for (let i = 1; i < n - 2; i++) {
+        for (let j = i + 1; j < n - 1; j++) {
+            const g1 = sorted.slice(0, i);
+            const g2 = sorted.slice(i, j);
+            const g3 = sorted.slice(j);
+
+            const totalVariance = getVariance(g1) + getVariance(g2) + getVariance(g3);
+
+            if (totalVariance < bestVariance) {
+                bestVariance = totalVariance;
+                bestBreaks = [sorted[i], sorted[j]];
+            }
+        }
+    }
+
+    return bestBreaks;
+}
+
+// =========================================================================
+// FUNGSI CHOROPLETH COLORING (NATURAL BREAKS / JENKS)
+// =========================================================================
+async function updateChoroplethLayer(targetProperty = 'none') {
+    if (!map || !map.getLayer('polygon-base')) return;
+
+    const selectedCity = typeof filterState !== 'undefined' ? filterState.city : 'all';
+
+    // 1. JIKA PARAMETER 'NONE' ATAU KOTA 'ALL' -> KEMBALIKAN KE WARNA BIRU BASE
+    //if (targetProperty === 'none' || selectedCity === 'all') {
+    //    map.setPaintProperty('polygon-base', 'fill-color', '#3b82f6');
+    //    map.setPaintProperty('polygon-base', 'fill-opacity', 0.25);
+    //    resetLegendUI();
+    //    return;
+    //}
+    // 1. JIKA PARAMETER 'NONE' ATAU KOTA 'ALL' -> KEMBALIKAN KE WARNA BIRU BASE
+    if (targetProperty === 'none' || selectedCity === 'all') {
+        map.setPaintProperty('polygon-base', 'fill-color', '#3b82f6');
+
+        const selectedDistrict = typeof filterState !== 'undefined' ? filterState.district : 'all';
+
+        if (selectedDistrict !== 'all' && selectedCity !== 'all') {
+            // Jika memilih 1 kecamatan pada mode warna biru standar
+            map.setPaintProperty('polygon-base', 'fill-opacity', [
+                'case',
+                ['==', ['downcase', ['coalesce', ['get', 'district'], ['get', 'district_name'], '']], selectedDistrict.toLowerCase().trim()],
+                0.75,  // Kecamatan aktif: Biru Pekat
+                0.12   // Kecamatan lain: Biru Transparan Tipis
+            ]);
+        } else {
+            // Default Nasional / Semua Kecamatan
+            map.setPaintProperty('polygon-base', 'fill-opacity', 0.25);
+        }
+
+        resetLegendUI();
+        return;
+    }
+
+    try {
+        console.log(`Updating Choropleth (Natural Breaks) untuk kota: ${selectedCity}, Parameter: ${targetProperty}...`);
+
+        const response = await fetch(`/api/demographics/all?regencyName=${encodeURIComponent(selectedCity)}`);
+        if (!response.ok) return;
+
+        const dataList = await response.json();
+        if (!dataList || dataList.length === 0) {
+            resetLegendUI();
+            return;
+        }
+
+        // 🔑 SAFETY NET: Filter ketat khusus kota aktif
+        const activeData = dataList.filter(d => {
+            const reg = (d.regency || d.Regency || '').toString().trim().toLowerCase();
+            return reg === selectedCity.trim().toLowerCase();
+        });
+
+        const targetData = activeData.length > 0 ? activeData : dataList;
+
+        const values = targetData
+            .map(d => Number(d[targetProperty] ?? d.totalPopulation ?? d.total_population))
+            .filter(v => !isNaN(v) && v >= 0);
+
+        if (values.length === 0) {
+            resetLegendUI();
+            return;
+        }
+
+        const minVal = Math.min(...values);
+        const maxVal = Math.max(...values);
+        const [break1, break2] = getJenks3Breaks(values);
+
+        // 🔑 SUSUN MAP DARI TARGETDATA (Bukan dataList)
+        const uniqueDistricts = new Map();
+
+        targetData.forEach(item => {
+            const rawName = (item.district || item.District || '').toString().trim().toLowerCase();
+            const val = Number(item[targetProperty] ?? item.totalPopulation ?? item.total_population ?? 0);
+
+            if (rawName && !uniqueDistricts.has(rawName)) {
+                let color = '#22c55e'; // 🟢 Rendah
+                if (val >= break2 && maxVal > minVal) {
+                    color = '#ef4444'; // 🔴 Tinggi
+                } else if (val >= break1 && maxVal > minVal) {
+                    color = '#eab308'; // 🟡 Sedang
+                }
+                uniqueDistricts.set(rawName, color);
+            }
+        });
+
+        const matchExpression = [
+            'match',
+            ['downcase', ['coalesce', ['get', 'district'], ['get', 'district_name'], '']]
+        ];
+
+        uniqueDistricts.forEach((color, name) => {
+            matchExpression.push(name, color);
+        });
+
+        // FALLBACK JADI HIJAU 
+        matchExpression.push('#22c55e');
+
+        //map.setPaintProperty('polygon-base', 'fill-color', matchExpression);
+        //map.setPaintProperty('polygon-base', 'fill-opacity', 0.75);
+        // =====================================================================
+        // 6. APPLY PEWARNAAN & DYNAMIC OPACITY (DIMMING EFFECT) KE POLYGON BASE
+        // =====================================================================
+        map.setPaintProperty('polygon-base', 'fill-color', matchExpression);
+
+        const selectedDistrict = typeof filterState !== 'undefined' ? filterState.district : 'all';
+
+        if (selectedDistrict !== 'all') {
+            //  KONDISI 1: ADA 1 KECAMATAN TERPILIH
+            // Buat kecamatan yang dipilih pekat (0.85), kecamatan lainnya meredup transparan (0.18)
+            map.setPaintProperty('polygon-base', 'fill-opacity', [
+                'case',
+                ['==', ['downcase', ['coalesce', ['get', 'district'], ['get', 'district_name'], '']], selectedDistrict.toLowerCase().trim()],
+                0.85,  // 🌟 Pekat & Menyala untuk kecamatan yang aktif
+                0.18   // 🌫️ Meredup transparan untuk kecamatan lain di kota tersebut
+            ]);
+        } else {
+        //  KONDISI 2: "SEMUA KECAMATAN" TERPILIH
+        // Semua kecamatan memiliki opacity normal yang merata
+            map.setPaintProperty('polygon-base', 'fill-opacity', 0.75);
+        }
+
+        updateLegendUI(minVal, break1, break2, maxVal);
+
+        console.log(`Natural Breaks Kota ${selectedCity} Berhasil! (${targetData.length} Kec) | Min: ${minVal}, Mid1: ${break1}, Mid2: ${break2}, Max: ${maxVal}`);
+
+    } catch (err) {
+        console.error("Error updateChoroplethLayer:", err);
+    }
+}
+
+function updateLegendUI(min, break1, break2, max) {
+    const format = (num) => new Intl.NumberFormat('id-ID').format(num);
+
+    const elemLow = document.getElementById('legend-range-low');
+    const elemMed = document.getElementById('legend-range-medium');
+    const elemHigh = document.getElementById('legend-range-high');
+
+    if (elemLow) elemLow.textContent = `${format(min)} - ${format(break1 > min ? break1 - 1 : min)}`;
+    if (elemMed) elemMed.textContent = `${format(break1)} - ${format(break2 > break1 ? break2 - 1 : break1)}`;
+    if (elemHigh) elemHigh.textContent = `>= ${format(break2)}`;
+}
+
+function resetLegendUI() {
+    const elemLow = document.getElementById('legend-range-low');
+    const elemMed = document.getElementById('legend-range-medium');
+    const elemHigh = document.getElementById('legend-range-high');
+
+    if (elemLow) elemLow.textContent = '-';
+    if (elemMed) elemMed.textContent = '-';
+    if (elemHigh) elemHigh.textContent = '-';
+}
