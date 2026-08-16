@@ -1,0 +1,50 @@
+<!-- SIDEBAR KANAN: INSIGHT PANEL -->
+<aside class="sidebar-right" id="sidebar-right">
+
+    <!-- 1. HEADER (TETAP DI ATAS KOTAK) -->
+    <div class="panel-header">
+        Insights & Analytics
+    </div>
+
+    <!-- 2. CONTENT CONTAINER (BISA SCROLL DI DALAM KOTAK) -->
+    <div class="panel-content">
+
+        <!-- STATE A: BELUM PILIH WILAYAH -->
+        <div id="insight-empty-state" class="empty-placeholder">
+            Pilih wilayah pada peta untuk melihat data detail & statistik demografi.
+        </div>
+
+        <!-- STATE B: SUDAH PILIH WILAYAH -->
+        <div id="insight-content-state" style="display: none;">
+            
+            <h4 id="insight-district-name" class="district-title">Nama Kecamatan</h4>
+
+            <div class="stat-card primary">
+                <span class="stat-label">Total Penduduk</span>
+                <h2 id="stat-total-pop" class="stat-value">-</h2>
+                <small class="stat-subtitle">Jiwa</small>
+            </div>
+
+            <hr class="divider" />
+
+            <div class="insight-section">
+                <span class="section-title">Distribusi Gender</span>
+                <div class="chart-box donut-box">
+                    <canvas id="genderDonutChart"></canvas>
+                </div>
+            </div>
+
+            <hr class="divider" />
+
+            <div class="insight-section">
+                <span class="section-title">Distribusi Usia & Gender</span>
+                <div class="chart-box pyramid-box">
+                    <canvas id="agePyramidChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</aside>
