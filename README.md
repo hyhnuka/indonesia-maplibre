@@ -19,7 +19,7 @@ Pastikan perangkat sudah terpasang:
 ### 1. Setup Database (PostgreSQL / PostGIS)
 1. Buka DBeaver atau pgAdmin, lalu buat database baru dengan nama `indonesia_map`.
 2. Buka **SQL Editor** pada database tersebut, lalu aktifkan ekstensi PostGIS terlebih dahulu:
-   ```sql
+```sql
    CREATE EXTENSION IF NOT EXISTS postgis;
 
 ```
@@ -86,7 +86,6 @@ Setelah aplikasi berjalan, buka browser dan akses URL yang tertera pada terminal
 * `http://localhost:5140`
 
 ---
-
 ## Fitur Utama Dashboard
 
 * **Peta Interaktif WebGIS**: Navigasi data spasial kecamatan dan kota seluruh Indonesia.
@@ -100,5 +99,4 @@ Setelah aplikasi berjalan, buka browser dan akses URL yang tertera pada terminal
 
 * **Dynamic Insight Panel**: Analisis metrik kependudukan dan visualisasi piramida penduduk per kecamatan.
 
-```
 
