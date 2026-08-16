@@ -12,43 +12,62 @@
     <!-- MapLibre GL CSS -->
     <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
     
-    <!-- CSS Utama & CSS Panel -->
+    <!-- CSS Utama & Panel -->
     <link rel="stylesheet" href="~/css/map.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/panel.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/filterpanel.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/insightpanel.css" asp-append-version="true" />
 </head>
 <body>
 
-    <!-- Peta Fullscreen -->
-    <div id="map"></div>
+    <div class="app-container">
+        
+        <!-- 1. MINI DARK NAVIGATION BAR (SLIM & SLEEK) -->
+        <nav class="mini-navbar">
+            <div class="nav-icon" title="Menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </div>
 
-    <!-- Panel Filter Sebelah Kanan (Melayang) -->
-    <div class="filter-sidebar">
-        <h3>Filter Wilayah</h3>
+            <div class="nav-divider"></div>
 
-        <!-- Filter Dropdown Kota / Kabupaten -->
-        <div class="filter-group">
-            <label for="filter-city">Kabupaten / Kota</label>
-            <select id="filter-city" class="filter-control">
-                <option value="all">Semua Kota / Kabupaten</option>
-                <!-- Opsi kota dimuat dinamis lewat API .NET oleh filter.js -->
-            </select>
-        </div>
+            <div class="nav-icon active" id="nav-btn-filter" title="Filter Panel">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                </svg>
+            </div>
 
-        <!-- Filter Dropdown Kecamatan (Dinamis & Disabled di Awal) -->
-        <div class="filter-group">
-            <label for="filter-district">Kecamatan</label>
-            <select id="filter-district" class="filter-control" disabled>
-                <option value="all">Semua Kecamatan</option>
-                <!-- Opsi kecamatan dimuat dinamis saat kota dipilih -->
-            </select>
-        </div>
+            <div class="nav-icon active" id="nav-btn-insight" title="Insight Panel">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+            </div>
+        </nav>
+
+        <!-- 2. SIDEBAR KIRI: CALL PARTIAL VIEW FILTER PANEL -->
+        <partial name="filterpanel" />
+
+        <!-- 3. TENGAH: MAP CANVAS -->
+        <main class="map-container">
+            <div id="map"></div>
+        </main>
+
+        <!-- 4. SIDEBAR KANAN: CALL PARTIAL VIEW INSIGHT PANEL -->
+        <partial name="insightpanel" />
+
     </div>
 
     <!-- Library Scripts -->
     <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- App Scripts (Urutan Harus map.js Dulu, Baru filter.js) -->
-    <script src="~/js/map.js" asp-append-version="true"></script>
+    <!-- App Custom Scripts -->
+    <script src="~/js/insight.js" asp-append-version="true"></script>
     <script src="~/js/filter.js" asp-append-version="true"></script>
+    <script src="~/js/map.js" asp-append-version="true"></script>
 </body>
 </html>
