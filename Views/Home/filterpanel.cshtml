@@ -1,0 +1,110 @@
+<!-- SIDEBAR KIRI: FLOATING FILTER PANEL (300px) -->
+<aside class="sidebar-left" id="sidebar-left">
+    <div class="panel-header"> Filter Data </div>
+    
+    <div class="panel-content">
+        <!-- WILAYAH -->
+        <div class="filter-section">
+            <span class="section-title">Wilayah</span>
+            
+            <div class="form-group">
+                <label for="filter-city">Kota / Kabupaten</label>
+                <select id="filter-city" class="form-control">
+                    <option value="all">Semua Kota</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="filter-district">Kecamatan</label>
+                <select id="filter-district" class="form-control">
+                    <option value="all">Semua Kecamatan</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- DATA PARAMETERS -->
+        <div class="filter-section">
+            <span class="section-title">Data Parameters</span>
+
+            <div class="form-group">
+                <label for="filter-category">Kategori</label>
+                <select id="filter-category" class="form-control">
+                    <option value="none">-- Pilih Kategori --</option>
+                    <option value="demographics">Kependudukan</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="filter-parameter">Parameter</label>
+                <select id="filter-parameter" class="form-control" disabled>
+                    <option value="none">-- Pilih Parameter --</option>
+                    <option value="total_population">Jumlah Penduduk</option>
+                    <option value="gender">Gender</option>
+                    <option value="age">Usia</option>
+                </select>
+            </div>
+
+            <!-- DYNAMIC FIELD: GENDER -->
+            <div class="form-group" id="wrapper-gender" style="display: none;">
+                <label for="filter-gender">Jenis Kelamin</label>
+                <select id="filter-gender" class="form-control">
+                    <option value="all">Keseluruhan</option>
+                    <option value="male">Laki-laki</option>
+                    <option value="female">Perempuan</option>
+                </select>
+            </div>
+
+            <!-- DYNAMIC FIELD: USIA -->
+            <div class="form-group" id="wrapper-age" style="display: none;">
+                <label for="filter-age-group">Kelompok Usia</label>
+                <select id="filter-age-group" class="form-control">
+                    <option value="0_4">0 – 4 Tahun</option>
+                    <option value="5_9">5 – 9 Tahun</option>
+                    <option value="10_14">10 – 14 Tahun</option>
+                    <option value="15_19">15 – 19 Tahun</option>
+                    <option value="20_24">20 – 24 Tahun</option>
+                    <option value="25_29">25 – 29 Tahun</option>
+                    <option value="30_34">30 – 34 Tahun</option>
+                    <option value="35_39">35 – 39 Tahun</option>
+                    <option value="40_44">40 – 44 Tahun</option>
+                    <option value="45_49">45 – 49 Tahun</option>
+                    <option value="50_54">50 – 54 Tahun</option>
+                    <option value="55_59">55 – 59 Tahun</option>
+                    <option value="60_64">60 – 64 Tahun</option>
+                    <option value="65_69">65 – 69 Tahun</option>
+                    <option value="70_74">70 – 74 Tahun</option>
+                    <option value="75_plus">75+ Tahun</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- LEGEND KLASIFIKASI DATA -->
+        <div class="filter-section">
+            <span class="section-title">Klasifikasi Data</span>
+            <div class="legend-card">
+                <div class="legend-item">
+                    <div class="legend-color bg-low"></div>
+                    <div class="legend-info">
+                        <span>Rendah</span>
+                        <small id="legend-range-low">-</small>
+                    </div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color bg-medium"></div>
+                    <div class="legend-info">
+                        <span>Sedang</span>
+                        <small id="legend-range-medium">-</small>
+                    </div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color bg-high"></div>
+                    <div class="legend-info">
+                        <span>Tinggi</span>
+                        <small id="legend-range-high">-</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</aside>
