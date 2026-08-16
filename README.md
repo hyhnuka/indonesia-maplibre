@@ -9,7 +9,7 @@ Aplikasi WebGIS interaktif berbasis **ASP.NET Core (.NET 8 MVC)**, **MapLibre GL
 Pastikan perangkat sudah terpasang:
 - [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 - [PostgreSQL](https://www.postgresql.org/download/) dengan ekstensi **PostGIS**
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (untuk menjalankan Martin Tile Server via Docker Compose)[cite: 1]
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (untuk menjalankan Martin Tile Server via Docker Compose)
 - Tool Database (DBeaver / pgAdmin)
 
 ---
