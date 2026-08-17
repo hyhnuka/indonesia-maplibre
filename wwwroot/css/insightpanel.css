@@ -119,3 +119,142 @@
     border-top: 1px solid #f1f5f9;
     margin: 4px 0;
 }
+
+/* ==========================================
+   CUACA (BMKG)
+   ========================================== */
+.weather-source {
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: #6366f1;
+    background-color: rgba(99, 102, 241, 0.12);
+    padding: 2px 8px;
+    border-radius: 20px;
+    text-transform: none;
+    letter-spacing: 0;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+.weather-loading,
+.weather-empty {
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.weather-card {
+    background-color: #f8fafc;
+    border: 1px solid #f1f5f9;
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.weather-main {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.weather-icon {
+    width: 52px;
+    height: 52px;
+    flex: none;
+}
+
+.weather-temp-block {
+    display: flex;
+    flex-direction: column;
+}
+
+.weather-temp {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.weather-desc {
+    font-size: 0.8rem;
+    color: #475569;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.weather-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.weather-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background-color: #ffffff;
+    border: 1px solid #f1f5f9;
+    border-radius: 10px;
+    padding: 8px 10px;
+}
+
+.w-label {
+    font-size: 0.62rem;
+    color: #94a3b8;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.w-value {
+    font-size: 0.8rem;
+    color: #1e293b;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.weather-location {
+    font-size: 0.68rem;
+    color: #94a3b8;
+    font-style: italic;
+}
+
+.weather-strip {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+
+.weather-strip-item {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    background-color: #ffffff;
+    border: 1px solid #f1f5f9;
+    border-radius: 10px;
+    padding: 8px 10px;
+    min-width: 56px;
+}
+
+    .weather-strip-item img {
+        width: 26px;
+        height: 26px;
+    }
+
+    .weather-strip-item .ws-time {
+        font-size: 0.62rem;
+        color: #94a3b8;
+        font-weight: 600;
+    }
+
+    .weather-strip-item .ws-temp {
+        font-size: 0.75rem;
+        color: #0f172a;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+    }

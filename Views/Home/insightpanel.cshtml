@@ -19,6 +19,33 @@
             
             <h4 id="insight-district-name" class="district-title">Nama Kecamatan</h4>
 
+            <!-- CUACA (BMKG) -->
+            <div class="insight-section weather-section">
+                <span class="section-title">Cuaca Saat Ini <small class="weather-source">BMKG</small></span>
+
+                <div id="weather-loading" class="weather-loading">Memuat data cuaca...</div>
+                <div id="weather-empty" class="weather-empty" style="display: none;">Data cuaca tidak tersedia untuk wilayah ini.</div>
+
+                <div id="weather-content" class="weather-card" style="display: none;">
+                    <div class="weather-main">
+                        <img id="weather-icon" class="weather-icon" src="" alt="" />
+                        <div class="weather-temp-block">
+                            <span id="weather-temp" class="weather-temp">-</span>
+                            <span id="weather-desc" class="weather-desc">-</span>
+                        </div>
+                    </div>
+                    <div class="weather-stats">
+                        <div class="weather-stat"><span class="w-label">Kelembapan</span><span id="weather-hu" class="w-value">-</span></div>
+                        <div class="weather-stat"><span class="w-label">Angin</span><span id="weather-wind" class="w-value">-</span></div>
+                        <div class="weather-stat"><span class="w-label">Pandang</span><span id="weather-vs" class="w-value">-</span></div>
+                    </div>
+                    <div class="weather-strip" id="weather-strip"></div>
+                    <div class="weather-location" id="weather-location">-</div>
+                </div>
+            </div>
+
+            <hr class="divider" />
+
             <div class="stat-card primary">
                 <span class="stat-label">Total Penduduk</span>
                 <h2 id="stat-total-pop" class="stat-value">-</h2>

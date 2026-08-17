@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "indonesia-maplibre",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--urls", "http://localhost:5140"],
+      "port": 5140
+    }
+  ]
+}

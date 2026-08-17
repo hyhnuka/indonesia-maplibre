@@ -3,6 +3,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// Dipakai WeatherController untuk proxy ke wilayah.id & BMKG
+builder.Services.AddHttpClient();
+builder.Services.AddMemoryCache();
+
 // 2. Tambahkan CORS jika diperlukan
 builder.Services.AddCors(options =>
 {

@@ -44,6 +44,12 @@ function updateInsightPanel(data) {
 
     // 5. RENDER PIRAMIDA USIA
     renderAgePyramid(data);
+
+    // 6. AMBIL & RENDER CUACA (BMKG)
+    const districtId = data.district_id || data.DistrictId || data.districtId;
+    if (typeof fetchWeather === 'function') {
+        fetchWeather(districtId);
+    }
 }
 /**
  * Render Donut Chart Gender (Handled jika data 0)
