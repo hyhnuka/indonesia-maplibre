@@ -34,17 +34,12 @@ map.on('load', () => {
     // =========================================================================
     map.addSource('map-kecamatan', {
         type: 'vector',
-        url: 'http://localhost:3000/indonesia_map'
-    });
-
-    map.addSource('centroid-kota', {
-        type: 'vector',
-        url: 'http://localhost:3000/city_centroid_view'
+        url: 'http://localhost:3000/indonesia_map.1'
     });
 
     map.addSource('centroid-kecamatan', {
         type: 'vector',
-        url: 'http://localhost:3000/district_centroid_view'
+        url: 'http://localhost:3000/indonesia_map'
     });
 
     // =========================================================================
@@ -56,11 +51,25 @@ map.on('load', () => {
         'id': 'polygon-base',
         'type': 'fill',
         'source': 'map-kecamatan',
-        'source-layer': 'indonesia_map',
+        'source-layer': 'indonesia_map.1',
         'paint': {
             'fill-color': '#3b82f6',
-            'fill-opacity': 0.25,
-            'fill-outline-color': '#ffffff'
+            'fill-opacity': 1,
+            // 'fill-outline-color': '#ffffff'
+            // 'fill-outline-color': '#94a3b8'
+        }
+    });
+
+    // 2. LAYER GARIS BATAS PERMANEN (Tampilan Batas Semua Kecamatan)
+    map.addLayer({
+        'id': 'polygon-border',
+        'type': 'line',
+        'source': 'map-kecamatan',
+        'source-layer': 'indonesia_map.1',
+        'paint': {
+            'line-color': '#ffffff', // Warna garis batas (putih)
+            'line-width': 1.5,       // Ketebalan garis batas antar kecamatan
+            'line-opacity': 1
         }
     });
 
@@ -69,7 +78,7 @@ map.on('load', () => {
         'id': 'polygon-active',
         'type': 'line',
         'source': 'map-kecamatan',
-        'source-layer': 'indonesia_map',
+        'source-layer': 'indonesia_map.1',
         'paint': {
             'line-color': '#6366F1',
             'line-width': 2.5,
@@ -83,7 +92,7 @@ map.on('load', () => {
         'id': 'titik-kecamatan',
         'type': 'circle',
         'source': 'centroid-kecamatan',
-        'source-layer': 'district_centroid_view',
+        'source-layer': 'indonesia_map',
         'layout': {
             'visibility': 'none'
         },
@@ -95,22 +104,7 @@ map.on('load', () => {
         }
     });
 
-    // 4. TITIK KOTA (CIRCLE MERAH)
-    map.addLayer({
-        'id': 'titik-kota',
-        'type': 'circle',
-        'source': 'centroid-kota',
-        'source-layer': 'city_centroid_view',
-        'layout': {
-            'visibility': 'visible'
-        },
-        'paint': {
-            'circle-radius': 5,
-            'circle-color': '#dc2626',
-            'circle-stroke-width': 1,
-            'circle-stroke-color': '#ffffff'
-        }
-    });
+  
 
     map.once('idle', () => {
         if (typeof applyFilters === 'function') {
@@ -118,20 +112,7 @@ map.on('load', () => {
         }
     });
 
-    // =========================================================================
-    // 4. INTERAKSI KLIK PETA
-    // =========================================================================
-    map.on('click', 'titik-kota', (e) => {
-        if (!e.features || e.features.length === 0) return;
-        const cityName = e.features[0].properties.regency;
-
-        const citySelect = document.getElementById('filter-city');
-        if (citySelect) {
-            citySelect.value = cityName;
-            citySelect.dispatchEvent(new Event('change'));
-        }
-    });
-
+    
     const handleDistrictClick = async (e) => {
         if (!e.features || e.features.length === 0) return;
 
@@ -213,8 +194,6 @@ map.on('load', () => {
     });
 
     const setCursor = (c) => () => map.getCanvas().style.cursor = c;
-    map.on('mouseenter', 'titik-kota', setCursor('pointer'));
-    map.on('mouseleave', 'titik-kota', setCursor(''));
     map.on('mouseenter', 'titik-kecamatan', setCursor('pointer'));
     map.on('mouseleave', 'titik-kecamatan', setCursor(''));
     map.on('mouseenter', 'polygon-base', setCursor('pointer'));
@@ -272,13 +251,6 @@ async function updateChoroplethLayer(targetProperty = 'none') {
     const selectedCity = typeof filterState !== 'undefined' ? filterState.city : 'all';
 
     // 1. JIKA PARAMETER 'NONE' ATAU KOTA 'ALL' -> KEMBALIKAN KE WARNA BIRU BASE
-    //if (targetProperty === 'none' || selectedCity === 'all') {
-    //    map.setPaintProperty('polygon-base', 'fill-color', '#3b82f6');
-    //    map.setPaintProperty('polygon-base', 'fill-opacity', 0.25);
-    //    resetLegendUI();
-    //    return;
-    //}
-    // 1. JIKA PARAMETER 'NONE' ATAU KOTA 'ALL' -> KEMBALIKAN KE WARNA BIRU BASE
     if (targetProperty === 'none' || selectedCity === 'all') {
         map.setPaintProperty('polygon-base', 'fill-color', '#3b82f6');
 
@@ -313,7 +285,7 @@ async function updateChoroplethLayer(targetProperty = 'none') {
             return;
         }
 
-        // 🔑 SAFETY NET: Filter ketat khusus kota aktif
+        // SAFETY NET: Filter ketat khusus kota aktif
         const activeData = dataList.filter(d => {
             const reg = (d.regency || d.Regency || '').toString().trim().toLowerCase();
             return reg === selectedCity.trim().toLowerCase();
@@ -334,7 +306,7 @@ async function updateChoroplethLayer(targetProperty = 'none') {
         const maxVal = Math.max(...values);
         const [break1, break2] = getJenks3Breaks(values);
 
-        // 🔑 SUSUN MAP DARI TARGETDATA (Bukan dataList)
+        // SUSUN MAP DARI TARGETDATA (Bukan dataList)
         const uniqueDistricts = new Map();
 
         targetData.forEach(item => {
@@ -342,11 +314,11 @@ async function updateChoroplethLayer(targetProperty = 'none') {
             const val = Number(item[targetProperty] ?? item.totalPopulation ?? item.total_population ?? 0);
 
             if (rawName && !uniqueDistricts.has(rawName)) {
-                let color = '#22c55e'; // 🟢 Rendah
+                let color = '#22c55e'; // Rendah
                 if (val >= break2 && maxVal > minVal) {
-                    color = '#ef4444'; // 🔴 Tinggi
+                    color = '#ef4444'; // Tinggi
                 } else if (val >= break1 && maxVal > minVal) {
-                    color = '#eab308'; // 🟡 Sedang
+                    color = '#eab308'; // Sedang
                 }
                 uniqueDistricts.set(rawName, color);
             }
@@ -364,8 +336,6 @@ async function updateChoroplethLayer(targetProperty = 'none') {
         // FALLBACK JADI HIJAU 
         matchExpression.push('#22c55e');
 
-        //map.setPaintProperty('polygon-base', 'fill-color', matchExpression);
-        //map.setPaintProperty('polygon-base', 'fill-opacity', 0.75);
         // =====================================================================
         // 6. APPLY PEWARNAAN & DYNAMIC OPACITY (DIMMING EFFECT) KE POLYGON BASE
         // =====================================================================
@@ -379,12 +349,12 @@ async function updateChoroplethLayer(targetProperty = 'none') {
             map.setPaintProperty('polygon-base', 'fill-opacity', [
                 'case',
                 ['==', ['downcase', ['coalesce', ['get', 'district'], ['get', 'district_name'], '']], selectedDistrict.toLowerCase().trim()],
-                0.85,  // 🌟 Pekat & Menyala untuk kecamatan yang aktif
-                0.18   // 🌫️ Meredup transparan untuk kecamatan lain di kota tersebut
+                0.85,  // untuk kecamatan yang aktif
+                0.18   // untuk kecamatan lain di kota tersebut
             ]);
         } else {
-        //  KONDISI 2: "SEMUA KECAMATAN" TERPILIH
-        // Semua kecamatan memiliki opacity normal yang merata
+            //  KONDISI 2: "SEMUA KECAMATAN" TERPILIH
+            // Semua kecamatan memiliki opacity normal yang merata
             map.setPaintProperty('polygon-base', 'fill-opacity', 0.75);
         }
 
