@@ -4,7 +4,7 @@
     
     <div class="panel-content">
         <!-- WILAYAH -->
-        <div class="filter-section">
+        @* <div class="filter-section">
             <span class="section-title">Wilayah</span>
             
             <div class="form-group">
@@ -21,7 +21,40 @@
                 </select>
             </div>
         </div>
+ *@
+        <div class="filter-section">
+            <span class="section-title">Wilayah</span>
 
+            <div class="form-group custom-select-wrapper" id="wrapper-city-select">
+                <label for="search-city">Kota / Kabupaten</label>
+                <div class="input-icon-wrapper">
+                    <svg class="search-outline-icon" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="search-city" class="form-control searchable-input" placeholder="Semua Kota / Kabupaten" autocomplete="off" />
+                </div>
+                <ul class="custom-dropdown-list" id="list-city"></ul>
+                <select id="filter-city" style="display: none;">
+                    <option value="all">Semua Kota / Kabupaten</option>
+                </select>
+            </div>
+
+            <div class="form-group custom-select-wrapper" id="wrapper-district-select">
+                <label for="search-district">Kecamatan</label>
+                <div class="input-icon-wrapper">
+                    <svg class="search-outline-icon" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="search-district" class="form-control searchable-input" placeholder="Semua Kecamatan" autocomplete="off" disabled />
+                </div>
+                <ul class="custom-dropdown-list" id="list-district"></ul>
+                <select id="filter-district" style="display: none;">
+                    <option value="all">Semua Kecamatan</option>
+                </select>
+            </div>
+        </div>
         <!-- DATA PARAMETERS -->
         <div class="filter-section">
             <span class="section-title">Data Parameters</span>
