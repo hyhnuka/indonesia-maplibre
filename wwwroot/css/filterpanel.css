@@ -77,6 +77,101 @@
         box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
     }
 
+/* ==========================================
+   CUSTOM SEARCHABLE SELECT COMBOBOX
+   ========================================== */
+.custom-select-wrapper {
+    position: relative;
+}
+
+.input-icon-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Icon Kaca Pembesar Outline Garis */
+.search-outline-icon {
+    position: absolute;
+    left: 14px;
+    width: 16px;
+    height: 16px;
+    pointer-events: none;
+    transition: stroke 0.2s ease;
+}
+
+/* Single Box Input Style */
+.searchable-input {
+    padding-left: 38px !important; /* Space for outline icon */
+    padding-right: 36px !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 14px center !important;
+    background-size: 14px !important;
+    cursor: text;
+}
+
+    .searchable-input:focus + .search-outline-icon,
+    .input-icon-wrapper:focus-within .search-outline-icon {
+        stroke: #6366f1;
+    }
+
+    .searchable-input:disabled {
+        background-color: #f1f5f9;
+        color: #94a3b8;
+        cursor: not-allowed;
+    }
+
+/* Floating Dropdown List */
+.custom-dropdown-list {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    max-height: 220px;
+    overflow-y: auto;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 6px;
+    margin: 0;
+    list-style: none;
+    z-index: 50;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    display: none;
+}
+
+    .custom-dropdown-list.show {
+        display: block;
+    }
+
+    .custom-dropdown-list li {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #334155;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+        .custom-dropdown-list li:hover {
+            background-color: #f1f5f9;
+            color: #6366f1;
+        }
+
+        .custom-dropdown-list li.selected {
+            background-color: #eef2ff;
+            color: #4f46e5;
+            font-weight: 600;
+        }
+
+        .custom-dropdown-list li.no-result {
+            color: #94a3b8;
+            text-align: center;
+            cursor: default;
+        }
+
 /* Legend Card pada Filter Panel */
 .legend-card {
     background-color: #f8fafc;
