@@ -54,9 +54,7 @@ map.on('load', () => {
         'source-layer': 'indonesia_map.1',
         'paint': {
             'fill-color': '#3b82f6',
-            'fill-opacity': 1,
-            // 'fill-outline-color': '#ffffff'
-            // 'fill-outline-color': '#94a3b8'
+            'fill-opacity': 1
         }
     });
 
@@ -67,8 +65,8 @@ map.on('load', () => {
         'source': 'map-kecamatan',
         'source-layer': 'indonesia_map.1',
         'paint': {
-            'line-color': '#ffffff', // Warna garis batas (putih)
-            'line-width': 1.5,       // Ketebalan garis batas antar kecamatan
+            'line-color': '#ffffff', // Warna garis batas kecamatan nonaktif (putih)
+            'line-width': 1.5,       
             'line-opacity': 1
         }
     });
@@ -345,7 +343,7 @@ async function updateChoroplethLayer(targetProperty = 'none') {
 
         if (selectedDistrict !== 'all') {
             //  KONDISI 1: ADA 1 KECAMATAN TERPILIH
-            // Buat kecamatan yang dipilih pekat (0.85), kecamatan lainnya meredup transparan (0.18)
+            // Buat kecamatan yang dipilih jadi gelap, kecamatan lainnya meredup transparan 
             map.setPaintProperty('polygon-base', 'fill-opacity', [
                 'case',
                 ['==', ['downcase', ['coalesce', ['get', 'district'], ['get', 'district_name'], '']], selectedDistrict.toLowerCase().trim()],
