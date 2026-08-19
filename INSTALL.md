@@ -45,7 +45,6 @@ docker compose up -d
 * Pilih **Tools** -> **Execute Script**.
 * Masukkan path file `.sql` yang ingin di-restore, lalu jalankan hingga selesai.
 
----
 
 ### 3. Konfigurasi `appsettings.json`
 
@@ -64,8 +63,7 @@ Buka file `appsettings.json` di *root folder* proyek, lalu pastikan koneksi sesu
   },
   "AllowedHosts": "*"
 }
-
----
+```
 
 ### 4. Jalankan Aplikasi Web ASP.NET Core
 
