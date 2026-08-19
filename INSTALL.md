@@ -78,4 +78,4 @@ Setelah aplikasi berjalan, buka browser dan akses URL lokal yang tertera pada te
 
 ## 📌 Catatan Penting Terkait Konfigurasi Database (DBeaver & Docker)
 
-* **Nama Database, Username, & Password:** Parameter koneksi di DBeaver, file `appsettings.json`, dan `docker-compose.yaml` **tidak wajib kaku** sama persis seperti di atas. Kamu bebas mengubah nama database, *username*, atau *password*-nya, **asal pastikan** nilai yang ada di DBeaver dan file `appsettings.json` selaras/cocok dengan konfigurasi yang aktif.
+* **Nama Database, Username, & Password:** Parameter koneksi di DBeaver, file `appsettings.json`, dan `docker-compose.yaml` **tidak wajib kaku** sama persis seperti di atas. Bebas mengubah nama database, *username*, atau *password*-nya, **asal pastikan** nilai yang ada di DBeaver dan file `appsettings.json` sesuai dengan konfigurasi yang aktif.
