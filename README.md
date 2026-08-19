@@ -38,7 +38,7 @@ Pastikan perangkat sudah terpasang:
 ---
 
 ## 🛠️ Panduan Setup & Menjalankan Proyek
-
+Video Tutorial: https://youtu.be/CsRt5sQogxU
 ### 1. Clone Repositori & Jalankan Docker
 1. Clone repositori GitHub proyek ini:
 ```bash
