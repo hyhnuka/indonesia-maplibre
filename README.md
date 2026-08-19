@@ -41,20 +41,15 @@ Pastikan perangkat sudah terpasang:
 
 ### 1. Clone Repositori & Jalankan Docker
 1. Clone repositori GitHub proyek ini:
-   ```bash
+```bash
    git clone [https://github.com/hyhnuka/indonesia-maplibre.git](https://github.com/hyhnuka/indonesia-maplibre.git)
-
 ```
 
 2. Buka aplikasi **Docker Desktop** dan pastikan status *engine*-nya sudah *running* (hijau).
 3. Buka terminal di folder utama proyek, lalu jalankan perintah berikut untuk menyalakan database dan tile server secara instan:
 ```bash
 docker compose up -d
-
 ```
-
-
-
 ### 2. Setup Database Menggunakan DBeaver
 
 1. Buka aplikasi **DBeaver**, lalu buat koneksi baru ke server PostgreSQL lokal.
