@@ -74,7 +74,6 @@ Setelah aplikasi berjalan, buka browser dan akses URL lokal yang tertera pada te
 
 * `http://localhost:5140`
 
----
 
 ## 📌 Catatan Penting Terkait Konfigurasi Database (DBeaver & Docker)
 
