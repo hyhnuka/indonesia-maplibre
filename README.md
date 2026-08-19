@@ -94,15 +94,7 @@ Buka file `appsettings.json` di *root folder* proyek, lalu sesuaikan koneksi dat
 Buka terminal di *root* direktori proyek, lalu jalankan perintah berikut:
 
 ```bash
-# Restore package dependensi
-dotnet restore
-
-# Build proyek
-dotnet build
-
-# Jalankan aplikasi
 dotnet run
-
 ```
 
 Setelah aplikasi berjalan, buka browser dan akses URL lokal yang tertera pada terminal:
