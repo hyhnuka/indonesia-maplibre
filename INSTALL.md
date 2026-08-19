@@ -17,35 +17,32 @@ Pastikan perangkat sudah terpasang:
 
 ### 1. Clone Repositori & Jalankan Docker
 
-1. Clone repositori GitHub proyek ini:
+1) Clone repositori GitHub proyek ini:
 ```bash
 git clone [https://github.com/hyhnuka/indonesia-maplibre.git](https://github.com/hyhnuka/indonesia-maplibre.git)
 
 ```
 
-2. Buka aplikasi **Docker Desktop** dan pastikan status *engine*-nya sudah *running* (hijau).
-3. Buka terminal di folder utama proyek, lalu jalankan perintah berikut untuk menyalakan database dan tile server secara instan:
+2) Buka aplikasi **Docker Desktop** dan pastikan status *engine*-nya sudah *running* (hijau).
+3) Buka terminal di folder utama proyek, lalu jalankan perintah berikut untuk menyalakan database dan tile server secara instan:
 ```bash
 docker compose up -d
 ```
 
 ### 2. Setup Database Menggunakan DBeaver
-
-1. Buka aplikasi **DBeaver**, lalu buat koneksi baru ke server PostgreSQL lokal.
-2. Klik ikon *New Database Connection* → Pilih **PostgreSQL**.
-3. Isi parameter koneksi sesuai dengan konfigurasi pada file `docker-compose.yaml`:
+1) Buka aplikasi **DBeaver**, lalu buat koneksi baru ke server PostgreSQL lokal.
+2) Klik ikon *New Database Connection* → Pilih **PostgreSQL**.
+3) Isi parameter koneksi sesuai dengan konfigurasi pada file `docker-compose.yaml`:
 * **Host:** `localhost`
 * **Port:** `5432`
 * **Database:** `ooh_gis`
 * **Username:** `postgres`
 * **Password:** `postgres`
-
-4. Lakukan *restore* file *dump* `.sql` yang telah disediakan ke dalam database `ooh_gis`:
+4) Lakukan *restore* file *dump* `.sql` yang telah disediakan ke dalam database `ooh_gis`:
 * Klik kanan pada database `ooh_gis` di DBeaver.
 * Pilih **Tools** -> **Execute Script**.
 * Masukkan path file `.sql` yang ingin di-restore, lalu jalankan hingga selesai.
-
-
+* 
 ### 3. Konfigurasi `appsettings.json`
 
 Buka file `appsettings.json` di *root folder* proyek, lalu pastikan koneksi sesuai dengan database lokal:
