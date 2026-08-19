@@ -1,12 +1,6 @@
 let genderChartInstance = null;
 let pyramidChartInstance = null;
 
-/**
- * Update Panel Insight secara menyeluruh
- */
-/**
- * Update Panel Insight secara menyeluruh
- */
 function updateInsightPanel(data) {
     if (!data) return;
 
