@@ -1,6 +1,3 @@
----
-
-```markdown
 # Indonesia MapLibre Analytics & Demographics
 
 Aplikasi WebGIS interaktif berbasis **ASP.NET Core (.NET 8 MVC)**, **MapLibre GL JS**, dan **PostgreSQL / PostGIS** dengan **Martin Tile Server** untuk analisis data kependudukan dan visualisasi peta tematik (*Choropleth*) di Indonesia.
@@ -125,6 +122,3 @@ Setelah aplikasi berjalan, buka browser dan akses URL lokal yang tertera pada te
 
 * **Nama Database, Username, & Password:** Parameter koneksi di DBeaver, file `appsettings.json`, dan `docker-compose.yaml` **tidak wajib kaku** harus sama persis. Kamu bebas mengubah nama database, *username*, atau *password*-nya, **asal pastikan** nilai yang ada di DBeaver dan file `appsettings.json` selaras dengan konfigurasi yang aktif.
 
-```
-
-```
