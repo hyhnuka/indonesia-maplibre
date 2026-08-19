@@ -1,4 +1,3 @@
-Berikut adalah perbaikan lengkap pada bagian **Prasyarat Sistem** dan **1. Setup Database (PostgreSQL / PostGIS)** agar menggunakan **DBeaver** sesuai dengan instruksi yang kamu inginkan:
 
 ---
 
