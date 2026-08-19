@@ -42,7 +42,7 @@ docker compose up -d
 * Klik kanan pada database `ooh_gis` di DBeaver.
 * Pilih **Tools** -> **Execute Script**.
 * Masukkan path file `.sql` yang ingin di-restore, lalu jalankan hingga selesai.
-* 
+
 ### 3. Konfigurasi `appsettings.json`
 
 Buka file `appsettings.json` di *root folder* proyek, lalu pastikan koneksi sesuai dengan database lokal:
@@ -73,7 +73,7 @@ dotnet run
 Setelah aplikasi berjalan, buka browser dan akses URL lokal yang tertera pada terminal (biasanya):
 
 * `http://localhost:5140`
-
+---
 
 ## 📌 Catatan Penting Terkait Konfigurasi Database (DBeaver & Docker)
 
