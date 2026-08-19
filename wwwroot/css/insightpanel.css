@@ -6,7 +6,7 @@
     min-width: 380px;
     height: calc(100vh - 32px);
     background-color: #ffffff;
-    border-radius: 24px; /* Kotak rounded persis seperti filter panel */
+    border-radius: 24px; 
     display: flex;
     flex-direction: column;
     z-index: 20;
@@ -20,12 +20,12 @@
 
     /* State Sembunyi (Ke Kanan) */
     .sidebar-right.collapsed {
-        margin-right: -396px; /* 380px + gap 16px */
+        margin-right: -396px; 
         opacity: 0;
         pointer-events: none;
     }
 
-/* Header Panel (Matching dengan Filter Panel Header) */
+/* Header Panel */
 .panel-header {
     padding: 20px 24px 16px 24px;
     font-size: 1.125rem;
@@ -35,7 +35,7 @@
     background-color: #ffffff;
 }
 
-/* Container Content dengan Scrollbar Halus */
+/* Container Content dengan Scrollbar */
 .panel-content {
     padding: 20px 24px;
     display: flex;
