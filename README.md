@@ -39,8 +39,6 @@ Pastikan perangkat sudah terpasang:
 
 ## 🛠️ Panduan Setup & Menjalankan Proyek
 
-> **Catatan untuk Mas Alvin:** Jika ingin lebih cepat, kamu tinggal *clone* repositori ini saja dan ikuti panduan di bawah tanpa harus membangun proyek dari nol!
-
 ### 1. Clone Repositori & Jalankan Docker
 1. Clone repositori GitHub proyek ini:
    ```bash
